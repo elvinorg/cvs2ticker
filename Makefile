@@ -1,10 +1,10 @@
 #
 
-VERSION:=1.0
+VERSION:=1.1
 
 
 all:
-	@echo "ths is pretty broken, try install"
+	@echo "this is pretty broken, try install"
 
 install-shared:
 	mkdir -p /opt/share/stow/cvs2ticker-$(VERSION)/bin

@@ -5,8 +5,8 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.8 $
-# Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.9 $
+# Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,19 +27,24 @@
 
 cvs2ticker - pass CVS loginfo messages through to tickertape
 
-To enable this you should 'cvs co CVSROOT' then add the following line
-to the file named 'loginfo':
-   	
-	ALL	<path>/cvs2ticker %s [-g group]
-
-Then update your ~/.ticker/groups file to include the group which
-defaults to 'CVS', and all CVS updates will scroll by thereafter.
-
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 
+########################################################################
+########################################################################
+#
+#  CONFIGURATION SECTION
+#
+
+DEFAULT_GROUP = "CVS"
+TIMEOUT       = 10
+CVS2WEB_URL   = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
+
+
+#  end of configuration
+########################################################################
 ########################################################################
 
 import Elvin, ElvinMisc
@@ -47,9 +52,6 @@ import base64, os, pickle, sys, getopt, random, string, time
 
 
 ########################################################################
-
-DEFAULT_GROUP = 'CVS'
-TIMEOUT = 10
 
 LOG_MESSAGE    = 'Log Message:'
 MODIFIED_FILES = 'Modified Files:'
@@ -74,6 +76,12 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
                  STATUS:         "Status",
                  }
 
+USAGE = "Usage: %s [options] path\n" \
+        "[-h host]       hostname for Elvin server (default elvin)\n" \
+        "[-p port]       port number for Elvin server (default 5678)\n" \
+        "[-g group]      Tickertape group for notifications\n" \
+        "[-n name]       friendly name for the repository\n" \
+        "path            absolute path to repository files\n"
 
 
 ########################################################################
@@ -156,7 +164,7 @@ def log_to_ticker(ticker_group, repository, rep_dir):
 
     #-- add non-parsed text
     d_notify["Extras"] = extratext
-    d_notify["Original"] = str(lines)
+    d_notify["Original"] = reduce(lambda s,e: s+e, lines, "")
     d_notify["Repository"] = repository
     d_notify["Repository-Root"] = rep_dir
 
@@ -180,14 +188,14 @@ def log_to_ticker(ticker_group, repository, rep_dir):
         msg = msg + " Import"
         
     #-- the bill trap
-    if not string.strip(string.replace(d_section[LOG_MESSAGE], "\n", " ")):
+    if not string.strip(d_section[LOG_MESSAGE], "\n", " "):
         d_section[LOG_MESSAGE] = "%s, the slack bastard, didn't supply " \
-                            "a log message." % user
+                                 "a log message." % user
 
     msg = msg + ':' + d_notify[d_section[LOG_MESSAGE]]
 
     #-- create attachment URL
-    str_url = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
+    str_url = CVS2WEB_URL
     str_url = str_url + "?%s+%s" % (user, url_escape(pickle.dumps(d_notify)))
 
     #-- add tickertape-specific attributes
@@ -212,103 +220,88 @@ def url_escape(s):
     return s
 
 
+def error_exit(msg):
+    """Print error message and exit."""
+
+    #-- get executable name
+    progname = os.path.basename(sys.argv[0])
+
+    #-- message
+    sys.stderr.write(USAGE % progname)
+    sys.stderr.write("\n%s\n\n" % msg)
+
+    #-- quit
+    sys.exit(1)
+
+    
 ########################################################################
 
 if __name__ == '__main__':
 
-    #-- parse commandline args
-    progname = os.path.basename(sys.argv[0])
-    Usage = "Usage: %s options\n" \
-	    "[-d directory]  absolute path to CVS repository\n" \
-	    "[-h host]       hostname for Elvin server (default elvin)\n" \
-	    "[-p port]       port number for Elvin server (default 5678)\n" \
-	    "[-g group]      Tickertape group for notifications\n" \
-	    "[-r repository] name of repository\n" % progname
-
-    # Parse the args to get the optional host and port, then connect to Elvin
-    rep_dirs = []
-    ports = []
-    hosts = []
-    groups = []
-    repositories = []
-    rep_dir = None
+    #-- initialise
     host = None
     port = None
     group = None
     repository = None
+    d_notify = None
     
+    #-- check mandatory args
+    if len(sys.argv) < 3:
+        error_exit("Not enough arguments.")
+
+    rep_dir = sys.argv[-1]
+    
+    #-- parse options
     try:
-	(optlist,args) = getopt.getopt(sys.argv[1:], "d:p:h:g:r:")
+	(optlist,args) = getopt.getopt(sys.argv[1:-1], "p:h:g:n:")
     except:
-        sys.stderr.write(Usage + "Failed to process the arglist\n")
-	# print optlist, args - fixme: optlist and args not defined here?
-        # wotcha up to davey?? (br) 
-	sys.exit(1)
-    else:
-	for (opt, arg) in optlist:
-	    if opt == '-d':
-		rep_dirs.append(arg)
-	    if opt == '-h':
-		hosts.append(arg)
-	    if opt == '-p':
-		ports.append(arg)
-	    if opt == '-g':
-		groups.append(arg)
-	    if opt == '-r':
-		repositories.append(arg)
+        error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
 
-	if len(rep_dirs) == 1:
-	    rep_dir = rep_dirs[0]
-	elif len(rep_dirs) > 1:
-	    sys.stderr.write(Usage + "Can only specify one repository directory\n")
-	    sys.exit(1)
-	else:
-	    rep_dir = "/projects/elvin/CVS"
+    for (opt, arg) in optlist:
+        if opt == '-h':
+            if not host:
+                host = arg
+            else:
+                error_exit("Only one host specification allowed.")
 
-	if len(hosts) == 1:
-	    host = hosts[0]
-	elif len(hosts) > 1:
-	    sys.stderr.write(Usage + "Can only specify one elvin host\n")
-	    sys.exit(1)
+        if opt == '-p':
+            if not port:
+                try:
+                    port = string.atoi(arg)
+                except:
+                    error_exit("Port must be numeric.")
+                else:
+                    if port < 1 or port > 65535:
+                        error_exit("Port must between 1 and 65535.")
+            else:
+                error_exit("Only one port specification allowed.")
 
-	if len(groups) == 0:
-	    group = DEFAULT_GROUP
-	if len(groups) == 1:
-	    group = groups[0]
-	elif len(groups) > 1:
-	    sys.stderr.write(Usage + "Can only specify one group\n")
-	    sys.exit(1)
+        if opt == '-g':
+            if not group:
+                group = arg
+            else:
+                error_exit("Only one group specification allowed.")
 
-	if len(ports) == 1:
-	    try:
-		port = string.atoi(ports[0])
-	    except:
-		sys.stderr.write(Usage + "Port must be numeric\n")
-		sys.exit(1)
-	    else:
-		if port < 0:
-		    sys.stderr.write(Usage + "Port must be positive\n")
-		    sys.exit(1)
-	elif len(ports) > 1:
-	    sys.stderr.write(Usage + "Can only specify one elvin port\n")
-	    sys.exit(1)
+        if opt == '-n':
+            if not repository:
+                repository = arg
+            else:
+                error_exit("Only one name specification allowed.")
+                
+    #-- set default option values
+    if not group:
+        group = DEFAULT_GROUP
 
-	if len(repositories) == 1:
-	    repository = repositories[0]
-	elif len(repositories) == 0:
-	    repository = "elvin"
-	else:
-	    sys.stderr.write(Usage + "Must specify only one repository name\n")
-	    sys.exit(1)
-
-    # Fix the host and port to something useful if they didn't tell us
+    if not repository:
+        repository = rep_dir
+        
     (host, port) = ElvinMisc.HostAndPort(host, port)
     try:
 	e = Elvin.Elvin(Elvin.EC_NAMEDHOST, host, port)
     except:
-	sys.stderr.write("Unable to connect to Elvin at %s:%d\n" % (host, port))
-	sys.exit(1)
+	error_exit("Unable to connect to Elvin at %s:%d" % (host, port))
 
+    #-- get user
     user = ElvinMisc.GetUserName()
 
     #-- parse log message

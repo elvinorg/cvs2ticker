@@ -1,0 +1,74 @@
+.\" ***************************************************************
+.\" ***************************************************************
+.\" 
+.\" name sect foot-centre foot-left  head-centre   origin  architecture
+.TH cvs2ticker 1  "April 2000"  "tickertape.org"  "User Commands" "tickertape.org" "Elvin Project"
+.SH NAME
+cvs2ticker \- CVS loginfo producer for Tickertape
+.SH SYNOPSIS
+.B tickertape
+[\-g group] [\-h host] [\-p port] [\-n name] path
+.SH FLAGS
+.PP
+.TP 4
+\-g
+The name of the Tickertape group to which notifications are sent.  If
+not specified, defaults to CVS.
+.TP 4
+\-h
+Host name for the Elvin server.  Defaults to
+.IR elvin \.
+.TP 4
+\-p
+Port number for the Elvin server.  Defaults to 5678.
+.TP 4
+\-n
+Name of the repository.  This is a user-friendly name for the
+repository specified by the path argument.  If not supplied, it
+defaults to the complete path name as supplied.
+.SH DESCRIPTION
+.PP
+.B cvs2ticker
+generates
+.B Elvin
+notifications formatted for display by
+.B TickerTape
+for each commit or import into the nominated 
+.B CVS
+repository.  It parses the stdin passed from CVS and generates an
+Elvin notification in Tickertape Chat format.  It also includes an
+attachment encapsulating the logged information for use with the
+.B cvs2web
+CGI script.
+.SH EXIT CODES
+.PP
+.TP 4
+0
+Completed without error.
+.TP 4
+1
+A problem occurred.  See the debugging output for further information.
+.SH ENVIRONMENT
+.PP
+.TP 4
+.B DSTCDIR
+Used to locate all the required files.  Must be set correctly for the
+application to work.
+.SH "SEE ALSO"
+.PP
+.IR cvs (1),
+.BR cvs2web (1),
+.IR elvin (1),
+.IR jtickertape (1),
+.IR xtickertape (1)
+.PP
+.B "http://elvin.dstc.edu.au/"
+.SH AUTHOR
+.PP
+Original version by David Leonard with  ongoing hacks by David Arnold
+and Bill Segall.
+.PP
+Email can be directed to 
+.B elvin@dstc.edu.au
+.\" ***************************************************************
+
