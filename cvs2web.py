@@ -1,11 +1,11 @@
 #! /usr/local/dstc/alpha-dec-osfV4.0/bin/python
 #############################################################################
 #
-#              TickerTape
+#              Tickertape
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.1 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.2 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 
 #############################################################################
@@ -155,12 +155,15 @@ def add_info(d_cvs):
     
     send("<dl>\n  <dt>Added files:\n", 4)
 
+    str_dir = d_cvs["Repository-Directory"]
+    str_module = os.path.basename(str_dir)
+    
     for file in string.split(d_cvs["Added-Files"]):
-        full_path = os.path.join(d_cvs["Repository-Directory"], file)
-
+        full_path = os.path.join(str_dir, file)
+        
         send("<dd>%s" % file)
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s">cvsweb</a>]' %file, 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (str_module, file), 6)
         
     send("</dl>", 4)
     send("<p>", 4)
@@ -195,14 +198,17 @@ def modify_info(d_cvs):
     
     send("<dl>\n  <dt>Modified files:\n", 4)
 
+    str_dir = d_cvs["Repository-Directory"]
+    str_module = os.path.basename(str_dir)
+    
     for file in string.split(d_cvs["Modified-Files"]):
-        full_path = os.path.join(d_cvs["Repository-Directory"], file)
+        full_path = os.path.join(str_dir, file)
         
         send('<dd>%s' % file, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?diff+%s">diff</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s">cvsweb</a>]' %file, 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?diff+%s">diff</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (str_module, file), 6)
         
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
