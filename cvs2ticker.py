@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.31 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.32 $
 # Copyright:   (C) 1998-2002, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.31 $"[11:-2]
+__version__ = "$Revision: 1.32 $"[11:-2]
 
 
 ########################################################################
@@ -188,13 +188,14 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
     d_notify["Original"] = reduce(lambda s,e: s+e, lines, "")
     d_notify["Repository"] = repository
     d_notify["Repository-Root"] = rep_dir
-
-    #-- create tickertape message
     str_dir = d_notify["Repository-Directory"]
     rep_rel_path = str_dir[len(rep_dir)+1:]
     module = string.replace(string.split(rep_rel_path, "/")[0], '+', '%2b')
+    d_notify["Relative-Directory"] = rep_rel_path
+    d_notify["Module"] = module
 
-    msg = "In %s:" % module
+    #-- create tickertape message
+    msg = "In %s:" % rep_rel_path
 
     if d_notify[d_section[ADDED_FILES]]:
         msg = msg + " Added" + d_notify[d_section[ADDED_FILES]]
