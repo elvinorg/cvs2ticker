@@ -1,0 +1,8 @@
+#! /bin/sh
+
+echo "cvs2ticker error:"
+echo "This is a dummy file that should be replaced during"
+echo "installation.  If you see this when running ewafd, your"
+echo "install broke.  Mail elvin@dstc.com for help."
+
+exit 1
