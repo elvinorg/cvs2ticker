@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.21 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.22 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.21 $"[11:-2]
+__version__ = "$Revision: 1.22 $"[11:-2]
 
 
 ########################################################################
@@ -66,6 +66,8 @@ VENDOR_TAG     = 'Vendor Tag:'
 VENDOR_KEY     = 'Vendor-Tag'
 RELEASE_TAG    = 'Release Tags:'
 RELEASE_KEY    = 'Release-Tags'
+PLAIN_TAG      = '      Tag:'
+PLAIN_KEY      = 'Tag'
 
 TEXT_IMPORT    = 'cvs import:'
 STATUS         = 'Status:'
@@ -144,11 +146,15 @@ def log_to_ticker(ticker_group, repository, rep_dir):
 
         elif string.find(line, RELEASE_TAG) == 0:
             cur_section = None
-            if not d_notify.has_key(RELEASE_TAG):
-                d_notify[RELEASE_KEY] = line[len(RELEASE_TAG)+1:]
+            if not d_notify.has_key(RELEASE_KEY):
+                d_notify[RELEASE_KEY] = string.strip(line[len(RELEASE_TAG)+1:])
             else:
-                d_notify[RELEASE_KEY] = d_notify[RELEASE_KEY] + " " + string.strip(line)
-            
+                d_notify[RELEASE_KEY] = d_notify[RELEASE_KEY] + ' ' + string.strip(line[len(PLAIN_TAG)+1:])
+        elif string.find(line, PLAIN_TAG) == 0:
+            if not d_notify.has_key(PLAIN_KEY):
+                d_notify[PLAIN_KEY] = string.strip(line[len(PLAIN_TAG)+1:])
+            else:
+                d_notify[PLAIN_KEY] = d_notify[PLAIN_KEY] + ', ' + string.strip(line[len(PLAIN_TAG)+1:])
         elif cur_section == d_section[LOG_MESSAGE]:
             d_notify[cur_section] = d_notify[cur_section] + ' ' + line
         
@@ -199,6 +205,9 @@ def log_to_ticker(ticker_group, repository, rep_dir):
 
     if d_notify.has_key(IMPORTED_KEY):
         msg = msg + " Import"
+
+    if d_notify.has_key(PLAIN_KEY):
+        msg = msg + " (tag " + d_notify[PLAIN_KEY] + ")"
         
     #-- the bill trap
     if not string.strip(d_notify[d_section[LOG_MESSAGE]]):
