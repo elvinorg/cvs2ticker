@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.19 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.20 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.19 $"[11:-2]
+__version__ = "$Revision: 1.20 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -278,23 +278,20 @@ def import_info(d_cvs):
     if not d_cvs["Imported-Files"]:
         return
 
-    #-- find the module name(s)
-    str_dir = d_cvs["Repository-Directory"]
+    #-- find the repository details
     str_rep = d_cvs["Repository-Root"]
     str_rep_name = d_cvs["Repository"]
-    rep_rel_path = str_dir[len(str_rep)+1:]
-    mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
     send("<dl>\n  <dt>Imported files:\n", 4)
 
     for file in string.split(d_cvs["Imported-Files"]):
-        full_path = os.path.join(str_dir, file)
+        full_path = os.path.join(str_rep, file)
 
-        send('<dd>%s/%s\n' % (mod_rel_path, file), 6)
+        send('<dd>%s\n' % file, 6)
         send('[<a href="%s?file+%s">file</a>]\n' % (CVS2WEB_URL, full_path), 10)
         send('[<a href="%s?log+%s">log</a>]\n' % (CVS2WEB_URL, full_path), 10)
         if CVSWEB_URL:
-            send('[<a href="%s/%s/%s?cvsroot=%s">cvsweb</a>]\n' % (CVSWEB_URL, rep_rel_path, file, str_rep_name), 10)
+            send('[<a href="%s/%s?cvsroot=%s">cvsweb</a>]\n' % (CVSWEB_URL, file, str_rep_name), 10)
 
     send("</dl>\n", 4)
     send("<p>\n", 4)
