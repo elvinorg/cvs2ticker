@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.6 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.7 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.6 $"[11:-2]
+__version__ = "$Revision: 1.7 $"[11:-2]
 
 
 #############################################################################
@@ -130,12 +130,19 @@ def user_info(user, d_cvs):
     if module_start != 0:
 	return
     module_path = str_dir[len(d_cvs["Repository"])+1:]
-    module = string.split(module_path, "/")[0]
+
+    #-- find the module name(s)
+    str_dir = d_cvs["Repository-Directory"]
+    str_rep = d_cvs["Repository-Root"]
+    str_rep_name = d_cvs["Repository"]
+    rep_rel_path = str_dir[len(str_rep)+1:]
+    mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
+    module = string.split(rep_rel_path, "/")[0]
     
     send('<tt><b>cvs commit</b></tt> in <i>%s</i> by <i>%s</i>' % (module, user), 4)
     send(' [<a href="mailto:%s@dstc.edu.au">mail</a>]' % user, 4)
-    send(' [<a href="/cgi-bin/ticker.py?%s+10+%s+%s+CVS">ticker</a>]<p>\n' % \
-         (logname, user, module), 4)
+    send(' [<a href="/cgi-bin/ticker.py?%s+10+%s+%s+%s">ticker</a>]<p>\n' % \
+         (logname, user, module, str_rep_name), 4)
     
     return
 
@@ -164,7 +171,7 @@ def add_info(d_cvs):
     
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
-    str_rep = d_cvs["Repository"]
+    str_rep = d_cvs["Repository-Root"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
@@ -196,7 +203,7 @@ def modify_info(d_cvs):
 
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
-    str_rep = d_cvs["Repository"]
+    str_rep = d_cvs["Repository-Root"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
@@ -224,7 +231,7 @@ def import_info(d_cvs):
 
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
-    str_rep = d_cvs["Repository"]
+    str_rep = d_cvs["Repository-Root"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     

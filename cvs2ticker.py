@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.3 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.4 $
 # Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ defaults to 'CVS', and all CVS updates will scroll by thereafter.
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 
 ########################################################################
@@ -78,11 +78,12 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
 
 ########################################################################
 
-def log_to_ticker(ticker_group, repository):
+def log_to_ticker(ticker_group, repository, rep_dir):
     """Generate a notification dictionary describing the CVS event.
 
     *ticker_group*  -- Tickertape group to notify
     *repository*    -- string repository name
+    *rep_dir*       -- absolute path to repository
     Returns         -- dictionary for Elvin notification
 
     This is pretty ugly ... one day i should tidy up dl's old stuff.
@@ -179,6 +180,7 @@ def log_to_ticker(ticker_group, repository):
     d_notify["Extras"] = extratext
     d_notify["Original"] = str(lines)
     d_notify["Repository"] = repository
+    d_notify["Repository-Root"] = rep_dir
 
     #-- create attachment URL
     str_url = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
@@ -212,26 +214,35 @@ if __name__ == '__main__':
 
     #-- parse commandline args
     progname = os.path.basename(sys.argv[0])
-    USAGE = "Usage: %s [-h host] [-p port] [-g group] [-r repository]\n" % (progname,)
+    USAGE = "Usage: %s options\n" \
+	    "[-d directory]  absolute path to CVS repository\n" \
+	    "[-h host]       hostname for Elvin server (default elvin)\n" \
+	    "[-p port]       port number for Elvin server (default 5678)\n" \
+	    "[-g group]      Tickertape group for notifications\n" \
+	    "[-r repository] name of repository\n" % (progname,)
 
     # Parse the args to get the optional host and port, then connect to Elvin
+    rep_dirs = []
     ports = []
     hosts = []
     groups = []
     repositories = []
+    rep_dir = None
     host = None
     port = None
     group = None
     repository = None
 
     try:
-	(optlist,args) = getopt.getopt(sys.argv[1:], "p:h:g:r:")
+	(optlist,args) = getopt.getopt(sys.argv[1:], "d:p:h:g:r:")
     except:
 	sys.stderr.write(Usage + "Failed to process the arglist\n")
 	print optlist, args
 	sys.exit(1)
     else:
 	for (opt, arg) in optlist:
+	    if opt == '-d':
+		rep_dirs.append(arg)
 	    if opt == '-h':
 		hosts.append(arg)
 	    if opt == '-p':
@@ -240,6 +251,14 @@ if __name__ == '__main__':
 		groups.append(arg)
 	    if opt == '-r':
 		repositories.append(arg)
+
+	if len(rep_dirs) == 1:
+	    rep_dir = rep_dirs[0]
+	elif len(rep_dirs) > 1:
+	    sys.stderr.write(Usage + "Can only specify one repository directory\n")
+	    sys.exit(1)
+	else:
+	    rep_dir = "/projects/elvin/CVS"
 
 	if len(hosts) == 1:
 	    host = hosts[0]
@@ -272,7 +291,7 @@ if __name__ == '__main__':
 	if len(repositories) == 1:
 	    repository = repositories[0]
 	elif len(repositories) == 0:
-	    repository = "/projects/elvin/CVS"
+	    repository = "elvin"
 	else:
 	    sys.stderr.write(Usage + "Must specify only one repository name\n")
 	    sys.exit(1)
@@ -288,7 +307,7 @@ if __name__ == '__main__':
     user = ElvinMisc.GetUserName()
 
     #-- parse log message
-    d_notify = log_to_ticker(group, repository)
+    d_notify = log_to_ticker(group, repository, rep_dir)
     if d_notify:
         e.notify(d_notify)
 
