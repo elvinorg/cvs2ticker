@@ -1,42 +1,54 @@
 #! /usr/bin/env python
-########################################################################
-#  Copyright (C) DSTC Pty Ltd (ACN 052 372 577) 2000-2002.
-#  All Rights Reserved.
-#
-#  This software is the property of the DSTC Pty Ltd.  Use of this
-#  software is strictly in accordance with the license agreement in
-#  the accompanying COPYING file.  If your distribution of this
-#  software does not contain a COPYING file then you have no rights to
-#  use this software in any manner and should contact DSTC at the
-#  address below to determine an appropriate licensing arrangement.
-#
-#     DSTC Pty Ltd
-#     University of Queensland
-#     St Lucia, 4072
-#     Australia
-#     Tel: +61 7 3365 4310
-#     Fax: +61 7 3365 4311
-#     Email: enquiries@dstc.com
-#
-#  This software is being provided "AS IS" without warranty of any
-#  kind.  In no event shall DSTC Pty Ltd be liable for damage of any
-#  kind arising out of or in connection with the use or performance of
-#  this software.
-########################################################################
 
-__version__ = "$Revision: 1.8 $"[11:-2]
+# COPYRIGHT_BEGIN
+#
+#    Copyright (C) Mantara Software (ABN 17 105 665 594) 1995-2004.
+#    All Rights Reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+#
+# * Redistributions of source code must retain the above
+#   copyright notice, this list of conditions and the following
+#   disclaimer.
+#
+# * Redistributions in binary form must reproduce the above
+#   copyright notice, this list of conditions and the following
+#   disclaimer in the documentation and/or other materials
+#   provided with the distribution.
+#
+# * Neither the name of Mantara Software nor the names
+#   of its contributors may be used to endorse or promote
+#   products derived from this software without specific prior
+#   written permission. 
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+# FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+# REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+# ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+#
+# COPYRIGHT_END
 
-########################################################################
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 from distutils.core import setup
 
 setup (name="cvs2ticker",
-       version="1.4.0",
+       version="1.4.1",
        description="Logs CVS messages to Elvin's tickertape clients",
        author="David Arnold",
-       author_email="elvin@dstc.com",
-       url="http://elvin.dstc.com/projects/cvs2ticker/",
-       licence="Copyright (C) DSTC, 2000-2002.",
+       author_email="davida@pobox.com",
+       url="http://www.tickertape.org/projects/cvs2ticker/",
+       licence="Copyright (C) Mantara, 2000-2004 (BSD licensed)",
        long_description="""
        This package provides a python script that is run by CVS that logs
        messages via Elvin suitable for tickertape. It creates a shared

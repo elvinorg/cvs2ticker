@@ -40,9 +40,9 @@ for notification of events in distributed applications, and works well
 as a communications middleware.
 
 More information about the architecture, software and applications is
-available from the Elvin web page at
+available from the Mantara web site at
 
-    http://elvin.dstc.com/
+    http://www.mantara.com/
 
 What is Tickertape?
 -------------------
@@ -51,9 +51,9 @@ to provide users with a wide variety of information from many sources using a
 minimum of screen space.
 
 More information about Tickertape, and implementations on several platforms
-are available from the Tickertape web page at
+are available from the Tickertape web site at
 
-    http://elvin.dstc.com/projects/tickertape/
+    http://www.tickertape.org/
 
 What is CVS?
 ------------
@@ -80,4 +80,4 @@ the CVSWeb web page at
     http://stud.fh-heilbronn.de/~zeller/cgi/cvsweb.cgi/
 
 
-@(#) $Id: README,v 1.3 2002/11/27 01:01:08 ilister Exp $
+@(#) $Id: README,v 1.4 2005/03/29 22:48:01 bill Exp $

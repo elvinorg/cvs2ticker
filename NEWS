@@ -1,10 +1,11 @@
 NEWS
 
-xx-xxx-xxxx	Ian Lister <ilister@dstc.com>
+06-Oct-2004
 - 1.4.1
 	- Distribution and installation is now much improved
 	- Tickertape v3 message attributes added to emitted
 	  notifications
+	- Released to tickertape.org under a BSD license
 
 27-Nov-2002	Ian Lister <ilister@dstc.com>
 - 1.4.0

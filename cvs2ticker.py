@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.33 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.34 $
 # Copyright:   (C) 1998-1999 David Leonard.
 # Copyright:   (C) 1999-2003 Bill Segall, David Arnold and Ian Lister.
 #
@@ -30,7 +30,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.33 $"[11:-2]
+__version__ = "$Revision: 1.34 $"[11:-2]
 
 
 ########################################################################
@@ -41,7 +41,7 @@ __version__ = "$Revision: 1.33 $"[11:-2]
 
 DEFAULT_GROUP = "CVS"
 TIMEOUT       = 10
-CVS2WEB_URL   = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
+CVS2WEB_URL   = "http://www.tickertape.org/cgi-bin/cvs2web.py"
 
 
 #  end of configuration
