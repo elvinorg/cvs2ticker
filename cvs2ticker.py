@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.1 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.2 $
 # Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 ########################################################################
-'''
+"""
 
 cvs2ticker - pass CVS loginfo messages through to tickertape
 
@@ -35,9 +35,9 @@ to the file named 'loginfo':
 Then update your ~/.ticker/groups file to include the group which
 defaults to 'CVS', and all CVS updates will scroll by thereafter.
 
-'''
+"""
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 
 ########################################################################
@@ -78,9 +78,15 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
 
 ########################################################################
 
-def log_to_ticker(l_args):
-    '''Read the loginfo data from standard input and args and
-    return a short bit of text that captures this.'''
+def log_to_ticker(ticker_group, repository):
+    """Generate a notification dictionary describing the CVS event.
+
+    *ticker_group*  -- Tickertape group to notify
+    *repository*    -- string repository name
+    Returns         -- dictionary for Elvin notification
+
+    This is pretty ugly ... one day i should tidy up dl's old stuff.
+    """
 
     #-- initialise parsed info
     d_notify = {}
@@ -148,7 +154,7 @@ def log_to_ticker(l_args):
 
 
     #-- create tickertape message
-    msg = ""
+    msg = "In %s:" % repository
     
     if d_notify[d_section[ADDED_FILES]]:
 	msg = msg + " Added " + d_notify[d_section[ADDED_FILES]]
@@ -180,11 +186,11 @@ def log_to_ticker(l_args):
     #-- add tickertape-specific attributes
     d_notify.update({'TIMEOUT' : TIMEOUT,
 		    'TICKERTEXT' : msg,
-		    'TICKERTAPE' : group,
+		    'TICKERTAPE' : ticker_group,
 		    'USER' : user,
                     'MIME_TYPE':   "x-elvin/url",
                     'MIME_ARGS':   str_url,
-                    'Message-Id':  random.randint(1, 0x7ffffff),
+                    'Message-Id':  str(random.randint(1, 0x7ffffff)),
                     'In-Reply-To': 0})
     return d_notify
 
@@ -203,19 +209,23 @@ def url_escape(s):
 ########################################################################
 
 if __name__ == '__main__':
+
+    #-- parse commandline args
     progname = os.path.basename(sys.argv[0])
-    USAGE = "Usage: %s [-h host] [-p port] [-g group]\n" % (progname,)
+    USAGE = "Usage: %s [-h host] [-p port] [-g group] [-r repository]\n" % (progname,)
 
     # Parse the args to get the optional host and port, then connect to Elvin
     ports = []
     hosts = []
     groups = []
+    repositories = []
     host = None
     port = None
     group = None
+    repository = None
 
     try:
-	(optlist,args) = getopt.getopt(sys.argv[1:], "p:h:g:")
+	(optlist,args) = getopt.getopt(sys.argv[1:], "p:h:g:r:")
     except:
 	sys.stderr.write(Usage + "Failed to process the arglist\n")
 	print optlist, args
@@ -228,6 +238,8 @@ if __name__ == '__main__':
 		ports.append(arg)
 	    if opt == '-g':
 		groups.append(arg)
+	    if opt == '-r':
+		repositories.append(arg)
 
 	if len(hosts) == 1:
 	    host = hosts[0]
@@ -256,26 +268,30 @@ if __name__ == '__main__':
 	elif len(ports) > 1:
 	    sys.stderr.write(Usage + "Can only specify one elvin port\n")
 	    sys.exit(1)
-	    
+
+	if len(repositories) == 1:
+	    repository = repositories[0]
+	elif len(repositories) == 0:
+	    repository = "Elvin"
+	else:
+	    sys.stderr.write(Usage + "Must specify only one repository name\n")
+	    sys.exit(1)
 
     # Fix the host and port to something useful if they didn't tell us
     (host, port) = ElvinMisc.HostAndPort(host, port)
     try:
 	e = Elvin.Elvin(Elvin.EC_NAMEDHOST, host, port)
     except:
-	sys.stderr.write("Unable to connect to Elvin at %s:%d\n" %(host, port))
+	sys.stderr.write("Unable to connect to Elvin at %s:%d\n" % (host, port))
+	sys.exit(1)
 
     user = ElvinMisc.GetUserName()
 
-
-    print "cvs2ticker, v" + __version__ + ":",
-
     #-- parse log message
-    d_notify = log_to_ticker(args)
+    d_notify = log_to_ticker(group, repository)
     if d_notify:
         e.notify(d_notify)
 
-    print "Ok."
     sys.exit(0)
 
 

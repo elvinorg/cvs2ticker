@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.3 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.4 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 
 #############################################################################
@@ -291,7 +291,7 @@ def diff(str_file):
         prev = "%s.%s" % (major, str(string.atoi(minor) - 1))
 
         #-- run rcsdiff
-        pout, pin, perr = popen2.popen3("cd /tmp; /usr/local/bin/rcsdiff -r%s %s,v 2>&1" % (prev, str_file))
+        pout, pin, perr = popen2.popen3("cd /tmp; /usr/local/bin/rcsdiff -u -r%s %s,v 2>&1" % (prev, str_file))
         s = pout.read()
         pout.close()
         pin.close()
