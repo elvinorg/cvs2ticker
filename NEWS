@@ -3,6 +3,8 @@ NEWS
 xx-xxx-xxxx	Ian Lister <ilister@dstc.com>
 - 1.4.1
 	- Distribution and installation is now much improved
+	- Tickertape v3 message attributes added to emitted
+	  notifications
 
 27-Nov-2002	Ian Lister <ilister@dstc.com>
 - 1.4.0
