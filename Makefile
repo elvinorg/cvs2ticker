@@ -1,6 +1,6 @@
 #
 
-VERSION:=1.2.0
+VERSION:=1.4.0
 
 INSTALL_ROOT=/usr/local/stow/cvs2ticker-$(VERSION)
 CGI_ROOT=/projects/www/internal/cgi-bin
