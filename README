@@ -42,7 +42,7 @@ as a communications middleware.
 More information about the architecture, software and applications is
 available from the Elvin web page at
 
-    http://elvin.dstc.edu.au/
+    http://elvin.dstc.com/
 
 What is Tickertape?
 -------------------
@@ -53,7 +53,7 @@ minimum of screen space.
 More information about Tickertape, and implementations on several platforms
 are available from the Tickertape web page at
 
-    http://elvin.dstc.edu.au/apps/tickertape/
+    http://elvin.dstc.com/projects/tickertape/
 
 What is CVS?
 ------------
@@ -80,4 +80,4 @@ the CVSWeb web page at
     http://stud.fh-heilbronn.de/~zeller/cgi/cvsweb.cgi/
 
 
-@(#) $Id: README,v 1.2 2000/12/19 01:07:13 ilister Exp $
+@(#) $Id: README,v 1.3 2002/11/27 01:01:08 ilister Exp $
