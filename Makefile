@@ -1,6 +1,6 @@
 #
 
-VERSION:=1.1a
+VERSION:=1.2.0
 
 INSTALL_ROOT=/usr/local/stow/cvs2ticker-$(VERSION)
 CGI_ROOT=/projects/www/internal/cgi-bin
@@ -29,4 +29,10 @@ stow:
 	stow -c cvs2ticker-$(VERSION) && stow -v cvs2ticker-$(VERSION))
 
 dist:
-	(cd ..; tar zcvf cvs2ticker/cvs2ticker.tar.gz cvs2ticker/cvs2ticker.1 cvs2ticker/cvs2ticker.py cvs2ticker/cvs2web.py cvs2ticker/Makefile)
+	(cd ..; tar zcvf cvs2ticker-$(VERSION).tar.gz \
+		cvs2ticker/cvs2ticker.1 \
+		cvs2ticker/cvs2ticker.py \
+		cvs2ticker/cvs2web.py \
+		cvs2ticker/Makefile \
+		cvs2ticker/README \
+		cvs2ticker/INSTALL)
