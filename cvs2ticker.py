@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.24 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.25 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.24 $"[11:-2]
+__version__ = "$Revision: 1.25 $"[11:-2]
 
 
 ########################################################################
@@ -102,7 +102,7 @@ def GetUserName():
 
     return user
 
-def log_to_ticker(ticker_group, repository, rep_dir):
+def log_to_ticker(ticker_group, repository, rep_dir, bastard):
     """Generate a notification dictionary describing the CVS event.
 
     *ticker_group*  -- Tickertape group to notify
@@ -212,9 +212,9 @@ def log_to_ticker(ticker_group, repository, rep_dir):
         msg = msg + " (tag " + d_notify[PLAIN_KEY] + ")"
         
     #-- the bill trap
-    if not string.strip(d_notify[d_section[LOG_MESSAGE]]):
-        d_notify[d_section[LOG_MESSAGE]] = " %s, the slack bastard, didn't" \
-                                           "supply a log message." % user
+    if bastard:
+        if not string.strip(d_notify[d_section[LOG_MESSAGE]]):
+            d_notify[d_section[LOG_MESSAGE]] = "%s, the slack bastard, didn't supply a log message." % user
 
     if found_files:
         msg = msg + ':' + d_notify[d_section[LOG_MESSAGE]]
@@ -270,6 +270,7 @@ if __name__ == '__main__':
     group = None
     repository = None
     d_notify = None
+    bastard = 1
     
     #-- check mandatory args
     if len(sys.argv) < 3:
@@ -279,7 +280,7 @@ if __name__ == '__main__':
     
     #-- parse options
     try:
-        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:")
+        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:b")
     except:
         error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
 
@@ -298,6 +299,9 @@ if __name__ == '__main__':
                 repository = arg
             else:
                 error_exit("Only one name specification allowed.")
+
+        if opt == '-b':
+            bastard = 0;
                 
     #-- set default option values
     if not group:
@@ -317,7 +321,7 @@ if __name__ == '__main__':
     user = GetUserName()
 
     #-- parse log message
-    d_notify = log_to_ticker(group, repository, rep_dir)
+    d_notify = log_to_ticker(group, repository, rep_dir, bastard)
     if d_notify:
         e.notify(d_notify)
 
