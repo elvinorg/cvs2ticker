@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.5 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.6 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 
 #############################################################################
@@ -227,13 +227,6 @@ def import_info(d_cvs):
     str_rep = d_cvs["Repository"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
-    
-
-    str_dir = os.path.dirname(d_cvs["Repository-Directory"])
-    module_start = string.find(str_dir, d_cvs["Repository"])
-    if module_start != 0:
-	return
-    str_module = str_dir[len(d_cvs["Repository"])+1:]
     
     send("<dl>\n  <dt>Imported files:\n", 4)
 
