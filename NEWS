@@ -1,0 +1,6 @@
+NEWS
+
+06-Aug-2001	Bill Segall <bill@segall.net>
+- 1.3.0
+	- Use distutils for packaging
+	- python-elvin-4.1b1 compatibility
