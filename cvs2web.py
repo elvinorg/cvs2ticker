@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.17 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.18 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.17 $"[11:-2]
+__version__ = "$Revision: 1.18 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -58,6 +58,11 @@ TICKER_URL    = CGI_URL + "/ticker.py"
 # for mailto links
 MAIL_DOMAIN   = "dstc.edu.au"
 # MAIL_DOMAIN   = ""
+
+# Set RCSPATH to the location of the installed RCS tools (with a
+# trailing slash), or empty to use the default PATH
+RCSPATH = ""
+# RCSPATH = "/usr/local/bin/"
 
 #  end of configuration
 #############################################################################
@@ -323,7 +328,7 @@ def file(str_file):
     send('Content-type: text/plain\n\n')
 
     try:
-        os.system("cd /tmp; /usr/local/bin/co %s,v" % str_file)
+        os.system("cd /tmp; " + RCSPATH + "co %s,v" % str_file)
     
         f = open("/tmp/%s" % os.path.basename(str_file))
         s = f.read()
@@ -350,10 +355,10 @@ def diff(str_file):
 
     try:
         #-- check out working file in /tmp
-        os.system("cd /tmp; /usr/local/bin/co %s,v" % str_file)
+        os.system("cd /tmp; " + RCSPATH + "co %s,v" % str_file)
 
         #-- run rlog to get latest version number
-        p = os.popen("/usr/local/bin/rlog %s" % str_file, "r")
+        p = os.popen(RCSPATH + "rlog %s" % str_file, "r")
         l = p.readlines()
         p.close()
 
@@ -362,7 +367,7 @@ def diff(str_file):
         prev = "%s.%s" % (major, str(string.atoi(minor) - 1))
 
         #-- run rcsdiff
-        pout, pin, perr = popen2.popen3("cd /tmp; /usr/local/bin/rcsdiff -r%s -u %s,v 2>&1" % (prev, str_file))
+        pout, pin, perr = popen2.popen3("cd /tmp; " + RCSPATH + "rcsdiff -r%s -u %s,v 2>&1" % (prev, str_file))
         s = pout.read()
         pout.close()
         pin.close()
@@ -385,7 +390,7 @@ def log(str_file):
 
     send('Content-type: text/plain\n\n')
     try:
-        p = os.popen("/usr/local/bin/rlog %s" % str_file, "r")
+        p = os.popen(RCSPATH + "rlog %s" % str_file, "r")
         s = p.read()
         p.close()
 
