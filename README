@@ -1,0 +1,80 @@
+cvs2ticker README
+=================
+
+Installation
+------------
+Please read the INSTALL file accompanying this file.
+
+What is cvs2ticker?
+-------------------
+cvs2ticker is an Elvin application designed to improve awareness between
+teams of programmers or other people working together on a project stored
+in a CVS repository.
+
+NOTE: cvs2ticker requires both Elvin and CVS; for more information see below.
+
+cvs2ticker is designed to be hooked into CVS such that it is run after each
+modification to the repository, typically during `cvs commit' operations.
+cvs2ticker extracts relevant information (e.g. module, modified files, and the
+user-supplied comment) and sends out an Elvin notification containing this
+information. The Elvin notification includes the attributes used by the
+Tickertape application (see below), allowing Tickertape users to be notified
+of the CVS events.
+
+cvs2ticker is accompanied by a CGI script, cvs2web, that displays the details
+of the CVS event. cvs2ticker encodes the relevant information and sends it
+as arguments in an attached URL with the Elvin notification. The URL points to
+the cvs2web CGI script, which decodes the information in order to display it.
+cvs2web allows simple operations including viewing the latest version of the
+file (obtained from the repository), viewing the differences between the latest
+version and the previous version, and viewing the CVS log information. It also
+provides a link to a CVSWeb (see below), providing other information and
+operations. The net effect is that Tickertape users can simply select a CVS
+notification and immediately view all the relevant information in their
+browsers.
+
+What is Elvin?
+--------------
+Elvin is a content-addressed message routing system.  It is often used
+for notification of events in distributed applications, and works well
+as a communications middleware.
+
+More information about the architecture, software and applications is
+available from the Elvin web page at
+
+    http://elvin.dstc.edu.au/
+
+What is Tickertape?
+-------------------
+Tickertape is an Elvin application that uses a scrolling one-line window
+to provide users with a wide variety of information from many sources using a
+minimum of screen space.
+
+More information about Tickertape, and implementations on several platforms
+are available from the Tickertape web page at
+
+    http://elvin.dstc.edu.au/apps/tickertape/
+
+What is CVS?
+------------
+CVS is the Concurrent Versions System, a version control system in widespread
+use for software development. Although useful for individuals, the key
+benefit is allowing many people in potentially widely distributed locations to
+work on the same set of files concurrently.
+
+More information about CVS, and implementations on most major platforms
+are available from the CVS web page at
+
+    http://www.cvshome.org/
+
+What is CVSWeb?
+---------------
+CVSWeb is an intuitive web interface to CVS. It allows easy browsing of a CVS
+repository and access to current and old versions of the files in it. It has
+many nice features including colourful, side-by-side diffs between arbitrary
+versions of a file.
+
+More information about CVSWeb, as well as CVSWeb itself, is available from
+the CVSWeb web page at
+
+    http://stud.fh-heilbronn.de/~zeller/cgi/cvsweb.cgi/
