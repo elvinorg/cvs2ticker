@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.2 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.3 $
 # Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ defaults to 'CVS', and all CVS updates will scroll by thereafter.
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 
 ########################################################################
@@ -178,7 +178,8 @@ def log_to_ticker(ticker_group, repository):
     #-- add non-parsed text
     d_notify["Extras"] = extratext
     d_notify["Original"] = str(lines)
-    
+    d_notify["Repository"] = repository
+
     #-- create attachment URL
     str_url = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
     str_url = str_url + "?%s+%s" % (user, url_escape(pickle.dumps(d_notify)))
@@ -190,8 +191,7 @@ def log_to_ticker(ticker_group, repository):
 		    'USER' : user,
                     'MIME_TYPE':   "x-elvin/url",
                     'MIME_ARGS':   str_url,
-                    'Message-Id':  str(random.randint(1, 0x7ffffff)),
-                    'In-Reply-To': 0})
+                    'Message-Id':  str(random.randint(1, 0x7ffffff))})
     return d_notify
 
 
@@ -272,7 +272,7 @@ if __name__ == '__main__':
 	if len(repositories) == 1:
 	    repository = repositories[0]
 	elif len(repositories) == 0:
-	    repository = "Elvin"
+	    repository = "/projects/elvin/CVS"
 	else:
 	    sys.stderr.write(Usage + "Must specify only one repository name\n")
 	    sys.exit(1)
