@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.22 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.23 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.22 $"[11:-2]
+__version__ = "$Revision: 1.23 $"[11:-2]
 
 
 ########################################################################
@@ -117,6 +117,7 @@ def log_to_ticker(ticker_group, repository, rep_dir):
     d_notify = {}
     cur_section = None
     extratext = ""
+    found_files = 0    # whether there have been any added/removed/etc
 
     for key in d_section.values():
         d_notify[key] = ""
@@ -138,6 +139,7 @@ def log_to_ticker(ticker_group, repository, rep_dir):
             cur_section = d_section[line]
         
         elif line[0] == "\t":
+            found_files = 1
             d_notify[cur_section] = d_notify[cur_section] + ' ' + string.strip(line)
 
         elif string.find(line, VENDOR_TAG) == 0:
@@ -214,7 +216,10 @@ def log_to_ticker(ticker_group, repository, rep_dir):
         d_notify[d_section[LOG_MESSAGE]] = "%s, the slack bastard, didn't supply " \
                                  "a log message." % user
 
-    msg = msg + ':' + d_notify[d_section[LOG_MESSAGE]]
+    if found_files:
+        msg = msg + ':' + d_notify[d_section[LOG_MESSAGE]]
+    else:
+        msg = msg + d_notify[d_section[LOG_MESSAGE]]
 
     #-- create attachment URL
     str_url = CVS2WEB_URL
