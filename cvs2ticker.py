@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.11 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.12 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.11 $"[11:-2]
+__version__ = "$Revision: 1.12 $"[11:-2]
 
 
 ########################################################################
@@ -47,8 +47,10 @@ CVS2WEB_URL   = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
 ########################################################################
 ########################################################################
 
-import Elvin, ElvinMisc
 import base64, os, pickle, sys, getopt, random, string, time
+from elvin.client import ElvinClient
+from elvin.sync import SyncLoop
+from elvin.notification import Notification
 
 
 ########################################################################
@@ -77,14 +79,26 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
                  }
 
 USAGE = "Usage: %s [options] path\n" \
-        "[-h host]       hostname for Elvin server (default elvin)\n" \
-        "[-p port]       port number for Elvin server (default 5678)\n" \
+        "[-e elvin-url]  Elvin server if you want to be spcific\n" \
         "[-g group]      Tickertape group for notifications\n" \
         "[-n name]       friendly name for the repository\n" \
         "path            absolute path to repository files\n"
 
 
 ########################################################################
+def GetUserName():
+    """Find and return the user name
+
+    Raises Exc_noname"""
+
+    if os.environ.has_key('LOGNAME'):
+		user = os.environ['LOGNAME']
+    elif os.environ.has_key('USER'):
+		user = os.environ['USER']
+    else:
+		raise Exc_noname, "Can't get user name"
+
+    return user
 
 def log_to_ticker(ticker_group, repository, rep_dir):
     """Generate a notification dictionary describing the CVS event.
@@ -238,8 +252,7 @@ def error_exit(msg):
 if __name__ == '__main__':
 
     #-- initialise
-    host = None
-    port = None
+    urls = []
     group = None
     repository = None
     d_notify = None
@@ -252,28 +265,13 @@ if __name__ == '__main__':
     
     #-- parse options
     try:
-	(optlist,args) = getopt.getopt(sys.argv[1:-1], "p:h:g:n:")
+	(optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:")
     except:
         error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
 
     for (opt, arg) in optlist:
-        if opt == '-h':
-            if not host:
-                host = arg
-            else:
-                error_exit("Only one host specification allowed.")
-
-        if opt == '-p':
-            if not port:
-                try:
-                    port = string.atoi(arg)
-                except:
-                    error_exit("Port must be numeric.")
-                else:
-                    if port < 1 or port > 65535:
-                        error_exit("Port must between 1 and 65535.")
-            else:
-                error_exit("Only one port specification allowed.")
+        if opt == '-e':
+			urls.append(arg)
 
         if opt == '-g':
             if not group:
@@ -294,14 +292,14 @@ if __name__ == '__main__':
     if not repository:
         repository = rep_dir
         
-    (host, port) = ElvinMisc.HostAndPort(host, port)
-    try:
-	e = Elvin.Elvin(Elvin.EC_NAMEDHOST, host, port)
-    except:
-	error_exit("Unable to connect to Elvin at %s:%d" % (host, port))
+	self.client = ElvinClient(SyncLoop)
+	self.elvin = self.client.connection()
+	for url in urls:
+		self.elvin.insert_server(0, url)
+	self.elvin.open()
 
     #-- get user
-    user = ElvinMisc.GetUserName()
+    user = GetUserName()
 
     #-- parse log message
     d_notify = log_to_ticker(group, repository, rep_dir)
