@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.2 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.3 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 
 #############################################################################
@@ -85,6 +85,10 @@ def wrap(s, width=60):
 
     return res
 
+
+def common_tail(str1, str2):
+    """ """
+    return ""
 
             
 #############################################################################
@@ -171,24 +175,6 @@ def add_info(d_cvs):
     return
 
 
-def remove_info(d_cvs):
-    if not d_cvs.has_key("Removed-Files"):
-        return
-
-    if not d_cvs["Removed-Files"]:
-        return
-    
-    send("<dl>\n  <dt>Removed files:\n", 4)
-
-    for file in string.split(d_cvs["Removed-Files"]):
-        send("<dd>%s\n" % file)
-        
-    send("</dl>", 4)
-    send("<p>", 4)
-    
-    return
-
-
 def modify_info(d_cvs):
     if not d_cvs.has_key("Modified-Files"):
         return
@@ -236,6 +222,24 @@ def import_info(d_cvs):
 
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
+    
+    return
+
+
+def remove_info(d_cvs):
+    if not d_cvs.has_key("Removed-Files"):
+        return
+
+    if not d_cvs["Removed-Files"]:
+        return
+    
+    send("<dl>\n  <dt>Removed files:\n", 4)
+
+    for file in string.split(d_cvs["Removed-Files"]):
+        send("<dd>%s\n" % file)
+        
+    send("</dl>", 4)
+    send("<p>", 4)
     
     return
 
