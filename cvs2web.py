@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.8 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.9 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 
 #############################################################################
@@ -172,6 +172,7 @@ def add_info(d_cvs):
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
+    str_rep_name = d_cvs["Repository"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
@@ -182,7 +183,7 @@ def add_info(d_cvs):
         
         send("<dd>%s/%s" % (mod_rel_path, file))
         send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
         
     send("</dl>", 4)
     send("<p>", 4)
@@ -204,6 +205,7 @@ def modify_info(d_cvs):
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
+    str_rep_name = d_cvs["Repository"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
@@ -214,7 +216,7 @@ def modify_info(d_cvs):
         send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
         send(' [<a href="/cgi-bin/cvs2web.py?diff+%s">diff</a>]' % full_path, 6)
         send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
         
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
@@ -232,6 +234,7 @@ def import_info(d_cvs):
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
+    str_rep_name = d_cvs["Repository"]
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
@@ -243,7 +246,7 @@ def import_info(d_cvs):
         send('<dd>%s/%s' % (mod_rel_path, file), 6)
         send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
         send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
 
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
