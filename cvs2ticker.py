@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.27 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.28 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.27 $"[11:-2]
+__version__ = "$Revision: 1.28 $"[11:-2]
 
 
 ########################################################################
@@ -48,9 +48,7 @@ CVS2WEB_URL   = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
 ########################################################################
 
 import base64, os, pickle, sys, getopt, random, string, time
-from elvin.core import Client
-from elvin.sync import SyncLoop
-from elvin.notification import Notification
+import elvin
 
 
 ########################################################################
@@ -88,6 +86,7 @@ USAGE = "Usage: %s [options] path\n" \
 
 
 ########################################################################
+
 def GetUserName():
     """Find and return the user name
 
@@ -101,6 +100,7 @@ def GetUserName():
         raise Exc_noname, "Can't get user name"
 
     return user
+
 
 def log_to_ticker(ticker_group, repository, rep_dir, bastard):
     """Generate a notification dictionary describing the CVS event.
@@ -310,13 +310,15 @@ if __name__ == '__main__':
     if not repository:
         repository = rep_dir
         
-    c = Client(SyncLoop)
+    c = elvin.client()
     e = c.connection()
 
     for url in urls:
         e.append_url(url)
+        e.set_discovery(0)
     else:
         e.set_discovery(1)
+
     e.open()
 
     #-- get user
