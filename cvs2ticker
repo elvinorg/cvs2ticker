@@ -8,4 +8,4 @@ LD_LIBRARY_PATH=$DSTCDIR/$SYSTYPE/lib; export LD_LIBRARY_PATH
 PYTHONPATH=$DSTCDIR/lib/python:$DSTCDIR/$SYSTYPE/lib; export PYTHONPATH
 
 #-- run real script
-${DSTCDIR}/${SYSTYPE}/bin/python /home/arnold/work/web-tools/cvs2ticker/cvs2ticker.py ${1+"$@"}
+${DSTCDIR}/${SYSTYPE}/bin/python /usr/local/bin/cvs2ticker.py ${1+"$@"}
