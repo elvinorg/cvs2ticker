@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.10 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.11 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,9 +31,32 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
+#############################################################################
+#############################################################################
+#
+#  CONFIGURATION SECTION
+#
 
+CGI_URL       = "/cgi-bin"
+CVS2WEB_URL   = CGI_URL + "/cvs2web.py"
+
+# Set CVSWEB_URL to the empty string if you don't use CVSWeb
+CVSWEB_URL    = CGI_URL + "/cvsweb.cgi"
+# CVSWEB_URL    = ""
+
+# Set TICKER_URL to the empty string if you don't use CGITicker
+TICKER_URL    = CGI_URL + "/ticker.py"
+# TICKER_URL    = ""
+
+# Set MAILDOMAIN to the empty string if all users don't share a domain
+# for mailto links
+MAIL_DOMAIN   = "dstc.edu.au"
+# MAIL_DOMAIN   = ""
+
+#  end of configuration
+#############################################################################
 #############################################################################
 
 import base64, cgi, os, pickle, popen2, regsub, string, sys, time
@@ -138,9 +161,14 @@ def user_info(user, d_cvs):
     send('<tr><td>Repository</td> <td><b>%s</b></td> <td>&nbsp;</td></tr>\n' % str_rep_name,10)
     send('<tr><td>Module</td> <td><b>%s</b></td> <td>&nbsp;</td></tr>\n' % module, 10)
     send('<tr><td>User</td> <td><b>%s</b></td>\n' % user, 10)
-    send('<td>[<a href="mailto:%s@dstc.edu.au">mail</a>]\n' % user, 14)
-    send('[<a href="/cgi-bin/ticker.py?%s+10+%s+%s+%s">ticker</a>]</td></tr>\n' % \
-         (logname, user, module, str_rep_name), 18)
+    send('<td>\n', 14)
+    if MAIL_DOMAIN:
+        send('[<a href="mailto:%s@%s">mail</a>]\n' % (user, MAIL_DOMAIN), 18)
+    if TICKER_URL:
+        send('[<a href="%s?%s+10+%s+%s+%s">ticker</a>]\n' % \
+         (TICKER_URL, logname, user, module, str_rep_name), 18)
+    send('</td>\n', 14)
+    send('</tr>\n', 10)
     send('</table>\n', 8)
     send('</dl>\n', 4)
     send('<p>\n', 4)
@@ -156,8 +184,8 @@ def log_msg(d_cvs):
     send('<td bgcolor="#c0c0c0">\n', 8)
     send("<pre>\n\n", 10)
     send(wrap(d_cvs["Log-Message"]))
-    send("\n  </pre>\n", 10)
-    send("    </td>\n  </tr>\n</table>", 4)
+    send("\n</pre>\n", 10)
+    send("    </td>\n  </tr>\n</table>\n", 4)
     return
 
 
@@ -181,9 +209,10 @@ def add_info(d_cvs):
     for file in string.split(d_cvs["Added-Files"]):
         full_path = os.path.join(str_dir, file)
         
-        send("<dd>%s/%s" % (mod_rel_path, file))
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
+        send("<dd>%s/%s\n" % (mod_rel_path, file), 6)
+        send('[<a href="%s?file+%s">file</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        if CVSWEB_URL:
+            send('[<a href="%s/%s/%s?cvsroot=%s">cvsweb</a>]\n' % (CVSWEB_URL, rep_rel_path, file, str_rep_name), 10)
         
     send("</dl>", 4)
     send("<p>", 4)
@@ -212,13 +241,14 @@ def modify_info(d_cvs):
     for file in string.split(d_cvs["Modified-Files"]):
         full_path = os.path.join(str_dir, file)
         
-        send('<dd>%s/%s' % (mod_rel_path, file), 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?diff+%s">diff</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
+        send('<dd>%s/%s\n' % (mod_rel_path, file), 6)
+        send('[<a href="%s?file+%s">file</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        send('[<a href="%s?diff+%s">diff</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        send('[<a href="%s?log+%s">log</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        if CVSWEB_URL:
+            send('[<a href="%s/%s/%s?cvsroot=%s">cvsweb</a>]\n' % (CVSWEB_URL, rep_rel_path, file, str_rep_name), 10)
         
-    send("\n</dl>\n", 4)
+    send("</dl>\n", 4)
     send("<p>\n", 4)
     
     return
@@ -243,12 +273,13 @@ def import_info(d_cvs):
     for file in string.split(d_cvs["Imported-Files"]):
         full_path = os.path.join(str_dir, file)
 
-        send('<dd>%s/%s' % (mod_rel_path, file), 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s?cvsroot=%s">cvsweb</a>]' % (rep_rel_path, file, str_rep_name), 6)
+        send('<dd>%s/%s\n' % (mod_rel_path, file), 6)
+        send('[<a href="%s?file+%s">file</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        send('[<a href="%s?log+%s">log</a>]\n' % (CVS2WEB_URL, full_path), 10)
+        if CVSWEB_URL:
+            send('[<a href="%s/%s/%s?cvsroot=%s">cvsweb</a>]\n' % (CVSWEB_URL, rep_rel_path, file, str_rep_name), 10)
 
-    send("\n</dl>\n", 4)
+    send("</dl>\n", 4)
     send("<p>\n", 4)
     
     return
@@ -264,7 +295,7 @@ def remove_info(d_cvs):
     send("<dl>\n  <dt>Removed files:\n", 4)
 
     for file in string.split(d_cvs["Removed-Files"]):
-        send("<dd>%s\n" % file)
+        send("<dd>%s\n" % file, 6)
         
     send("</dl>", 4)
     send("<p>", 4)
