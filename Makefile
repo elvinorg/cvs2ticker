@@ -28,3 +28,5 @@ stow:
 	(cd /usr/local/stow; \
 	stow -c cvs2ticker-$(VERSION) && stow -v cvs2ticker-$(VERSION))
 
+dist:
+	(cd ..; tar zcvf cvs2ticker/cvs2ticker.tar.gz cvs2ticker/cvs2ticker.1 cvs2ticker/cvs2ticker.py cvs2ticker/cvs2web.py cvs2ticker/Makefile)
