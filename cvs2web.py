@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.7 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.8 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 
 #############################################################################
@@ -124,13 +124,6 @@ def user_info(user, d_cvs):
     #-- get the name of the person?
     logname = "cvs%20user"
 
-    #-- determine module name (from working & repository paths)
-    str_dir = d_cvs["Repository-Directory"]
-    module_start = string.find(str_dir, d_cvs["Repository"])
-    if module_start != 0:
-	return
-    module_path = str_dir[len(d_cvs["Repository"])+1:]
-
     #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
@@ -138,12 +131,19 @@ def user_info(user, d_cvs):
     rep_rel_path = str_dir[len(str_rep)+1:]
     mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     module = string.split(rep_rel_path, "/")[0]
-    
-    send('<tt><b>cvs commit</b></tt> in <i>%s</i> by <i>%s</i>' % (module, user), 4)
-    send(' [<a href="mailto:%s@dstc.edu.au">mail</a>]' % user, 4)
-    send(' [<a href="/cgi-bin/ticker.py?%s+10+%s+%s+%s">ticker</a>]<p>\n' % \
-         (logname, user, module, str_rep_name), 4)
-    
+
+    send('<dl>\n', 4)
+    send('<dt><b>cvs commit</b></tt><p>\n', 6)
+    send('<dd>\n  <table>\n', 6)
+    send('<tr><td>Repository</td> <td><b>%s</b></td> <td>&nbsp;</td></tr>\n' % str_rep_name,10)
+    send('<tr><td>Module</td> <td><b>%s</b></td> <td>&nbsp;</td></tr>\n' % module, 10)
+    send('<tr><td>User</td> <td><b>%s</b></td>\n' % user, 10)
+    send('<td>[<a href="mailto:%s@dstc.edu.au">mail</a>]\n' % user, 14)
+    send('[<a href="/cgi-bin/ticker.py?%s+10+%s+%s+%s">ticker</a>]</td></tr>\n' % \
+         (logname, user, module, str_rep_name), 18)
+    send('</table>\n', 8)
+    send('</dl>\n', 4)
+    send('<p>\n', 4)
     return
 
 
