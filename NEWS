@@ -1,9 +1,14 @@
 NEWS
 
+xx-xxx-xxxx	Ian Lister <ilister@dstc.com>
+- 1.4.1
+	- Distribution and installation is now much improved
+
 27-Nov-2002	Ian Lister <ilister@dstc.com>
 - 1.4.0
 	- Directory names are included in the notification
 	- cvs2web URLs are now encoded more safely
+
 06-Aug-2001	Bill Segall <bill@segall.net>
 - 1.3.0
 	- Use distutils for packaging
