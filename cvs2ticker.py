@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.14 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.15 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.14 $"[11:-2]
+__version__ = "$Revision: 1.15 $"[11:-2]
 
 
 ########################################################################
@@ -92,11 +92,11 @@ def GetUserName():
     Raises Exc_noname"""
 
     if os.environ.has_key('LOGNAME'):
-		user = os.environ['LOGNAME']
+        user = os.environ['LOGNAME']
     elif os.environ.has_key('USER'):
-		user = os.environ['USER']
+        user = os.environ['USER']
     else:
-		raise Exc_noname, "Can't get user name"
+        raise Exc_noname, "Can't get user name"
 
     return user
 
@@ -189,13 +189,13 @@ def log_to_ticker(ticker_group, repository, rep_dir):
     msg = "In %s:" % module
     
     if d_notify[d_section[ADDED_FILES]]:
-	msg = msg + " Added " + d_notify[d_section[ADDED_FILES]]
+        msg = msg + " Added " + d_notify[d_section[ADDED_FILES]]
         
     if d_notify[d_section[REMOVED_FILES]]:
-	msg = msg + " Removed " + d_notify[d_section[REMOVED_FILES]]
+        msg = msg + " Removed " + d_notify[d_section[REMOVED_FILES]]
 
     if d_notify[d_section[MODIFIED_FILES]]:
-	msg = msg + " Modified " + d_notify[d_section[MODIFIED_FILES]]
+        msg = msg + " Modified " + d_notify[d_section[MODIFIED_FILES]]
 
     if d_notify.has_key(IMPORTED_KEY):
         msg = msg + " Import"
@@ -213,9 +213,9 @@ def log_to_ticker(ticker_group, repository, rep_dir):
 
     #-- add tickertape-specific attributes
     d_notify.update({'TIMEOUT' : TIMEOUT,
-		    'TICKERTEXT' : msg,
-		    'TICKERTAPE' : ticker_group,
-		    'USER' : user,
+            'TICKERTEXT' : msg,
+            'TICKERTAPE' : ticker_group,
+            'USER' : user,
                     'MIME_TYPE':   "x-elvin/url",
                     'MIME_ARGS':   str_url,
                     'Message-Id':  str(random.randint(1, 0x7ffffff))})
@@ -265,13 +265,13 @@ if __name__ == '__main__':
     
     #-- parse options
     try:
-	(optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:")
+        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:")
     except:
         error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
 
     for (opt, arg) in optlist:
         if opt == '-e':
-			urls.append(arg)
+            urls.append(arg)
 
         if opt == '-g':
             if not group:
@@ -292,11 +292,12 @@ if __name__ == '__main__':
     if not repository:
         repository = rep_dir
         
-	client = ElvinClient(SyncLoop)
-	e = client.connection()
-	for url in urls:
-		e.insert_server(0, url)
-	e.open()
+    c = ElvinClient(SyncLoop)
+    e = c.connection()
+
+    for url in urls:
+        e.insert_server(0, url)
+    e.open()
 
     #-- get user
     user = GetUserName()
