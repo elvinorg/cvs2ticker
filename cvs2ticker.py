@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.13 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.14 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.13 $"[11:-2]
+__version__ = "$Revision: 1.14 $"[11:-2]
 
 
 ########################################################################
@@ -292,11 +292,11 @@ if __name__ == '__main__':
     if not repository:
         repository = rep_dir
         
-	self.client = ElvinClient(SyncLoop)
-	self.elvin = self.client.connection()
+	client = ElvinClient(SyncLoop)
+	e = client.connection()
 	for url in urls:
-		self.elvin.insert_server(0, url)
-	self.elvin.open()
+		e.insert_server(0, url)
+	e.open()
 
     #-- get user
     user = GetUserName()
@@ -304,7 +304,7 @@ if __name__ == '__main__':
     #-- parse log message
     d_notify = log_to_ticker(group, repository, rep_dir)
     if d_notify:
-        self.elvin.notify(d_notify)
+        e.notify(d_notify)
 
     sys.exit(0)
 
