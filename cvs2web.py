@@ -1,11 +1,11 @@
-#! /usr/local/dstc/alpha-dec-osfV4.0/bin/python
+#! /usr/bin/env python
 #############################################################################
 #
 #              Tickertape
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.16 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.17 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.16 $"[11:-2]
+__version__ = "$Revision: 1.17 $"[11:-2]
 
 #############################################################################
 #############################################################################
