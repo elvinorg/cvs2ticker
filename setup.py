@@ -24,14 +24,14 @@
 #  this software.
 ########################################################################
 
-__version__ = "$Revision: 1.6 $"[11:-2]
+__version__ = "$Revision: 1.7 $"[11:-2]
 
 ########################################################################
 
 from distutils.core import setup
 
 setup (name="cvs2ticker",
-       version="1.3.0",
+       version="1.4.0",
        description="Logs CVS messages to Elvin's tickertape clients",
        author="David Arnold",
        author_email="elvin@dstc.com",
