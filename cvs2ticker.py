@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.30 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.31 $
 # Copyright:   (C) 1998-2002, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.30 $"[11:-2]
+__version__ = "$Revision: 1.31 $"[11:-2]
 
 
 ########################################################################
@@ -125,7 +125,7 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
     #-- read and process log message
     lines = sys.stdin.readlines()
     for line in lines:
-        
+
         #-- remove trailing newline
         if line[-1] == "\n":
             line = line[:-1]
@@ -137,7 +137,7 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
         if line in d_section.keys():
             #-- handle multi-line sections
             cur_section = d_section[line]
-        
+
         elif line[0] == "\t":
             found_files = 1
             d_notify[cur_section] = d_notify[cur_section] + ' ' + string.strip(line)
@@ -159,7 +159,7 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
                 d_notify[PLAIN_KEY] = d_notify[PLAIN_KEY] + ', ' + string.strip(line[len(PLAIN_TAG)+1:])
         elif cur_section == d_section[LOG_MESSAGE]:
             d_notify[cur_section] = d_notify[cur_section] + ' ' + line
-        
+
         else:
             cur_section = None
 
@@ -175,11 +175,11 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
                     d_notify[IMPORTED_KEY] = line[2:]
                 else:
                     d_notify[IMPORTED_KEY] = d_notify[IMPORTED_KEY] + ' ' + line[2:]
-                
+
             elif line[0:2] == "I ":
                 #-- ignore these, since CVS does ...
                 pass
-            
+
             else:
                 extratext = extratext + ' ' + line
 
@@ -195,10 +195,10 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
     module = string.replace(string.split(rep_rel_path, "/")[0], '+', '%2b')
 
     msg = "In %s:" % module
-    
+
     if d_notify[d_section[ADDED_FILES]]:
         msg = msg + " Added" + d_notify[d_section[ADDED_FILES]]
-        
+
     if d_notify[d_section[REMOVED_FILES]]:
         msg = msg + " Removed" + d_notify[d_section[REMOVED_FILES]]
 
@@ -210,7 +210,7 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
 
     if d_notify.has_key(PLAIN_KEY):
         msg = msg + " (tag " + d_notify[PLAIN_KEY] + ")"
-        
+
     #-- the bill trap
     if bastard:
         if not string.strip(d_notify[d_section[LOG_MESSAGE]]):
@@ -249,7 +249,7 @@ def error_exit(msg):
     #-- quit
     sys.exit(1)
 
-    
+
 ########################################################################
 
 if __name__ == '__main__':
@@ -260,13 +260,13 @@ if __name__ == '__main__':
     repository = None
     d_notify = None
     bastard = 1
-    
+
     #-- check mandatory args
     if len(sys.argv) < 3:
         error_exit("Not enough arguments.")
 
     rep_dir = sys.argv[-1]
-    
+
     #-- parse options
     try:
         (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:b")
@@ -290,15 +290,15 @@ if __name__ == '__main__':
                 error_exit("Only one name specification allowed.")
 
         if opt == '-b':
-            bastard = 0;
-                
+            bastard = 0
+
     #-- set default option values
     if not group:
         group = DEFAULT_GROUP
 
     if not repository:
         repository = rep_dir
-        
+
     c = elvin.client()
     e = c.connection()
 
