@@ -24,7 +24,7 @@
 #  this software.
 ########################################################################
 
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 ########################################################################
 
@@ -40,7 +40,7 @@ setup (name="cvs2ticker",
        long_description="""
        This package provides a python script that is run by CVS that logs
        messages via Elvin suitable for tickertape. It creates a shared
-	   awareness of changes to the CVS repository.""",
+       awareness of changes to the CVS repository.""",
        
        scripts=["cvs2ticker.py", "cvs2ticker", "cvs2web.py", "cvs2web"],
        #packages=[""],

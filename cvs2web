@@ -1,8 +1,8 @@
 #! /bin/sh
 
-echo "cvs2ticker error:"
+echo "cvs2web error:"
 echo "This is a dummy file that should be replaced during"
-echo "installation.  If you see this when running ewafd, your"
-echo "install broke.  Mail elvin@dstc.com for help."
+echo "installation.  If you see this when running cvs2web,"
+echo "your install broke.  Mail elvin@dstc.com for help."
 
 exit 1
