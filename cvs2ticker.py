@@ -5,8 +5,8 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.28 $
-# Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.29 $
+# Copyright:   (C) 1998-2002, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.28 $"[11:-2]
+__version__ = "$Revision: 1.29 $"[11:-2]
 
 
 ########################################################################
@@ -47,7 +47,7 @@ CVS2WEB_URL   = "http://internal.dstc.edu.au/cgi-bin/cvs2web.py"
 ########################################################################
 ########################################################################
 
-import base64, os, pickle, sys, getopt, random, string, time
+import base64, os, pickle, sys, getopt, random, string, time, urllib
 import elvin
 
 
@@ -223,7 +223,7 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
 
     #-- create attachment URL
     str_url = CVS2WEB_URL
-    str_url = str_url + "?%s+%s" % (user, url_escape(pickle.dumps(d_notify)))
+    str_url = str_url + "?%s+%s" % (user, urllib.quote(pickle.dumps(d_notify)))
 
     #-- add tickertape-specific attributes
     d_notify.update({'TIMEOUT' : TIMEOUT,
@@ -234,17 +234,6 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
                     'MIME_ARGS':   str_url,
                     'Message-Id':  str(random.randint(1, 0x7ffffff))})
     return d_notify
-
-
-def url_escape(s):
-    """Escape characters in s for inclusion in an URL"""
-
-    s = base64.encodestring(s)
-    s = string.replace(s, '\012', r'\x0a')
-    s = string.replace(s, '=', r'\x3d')
-    s = string.replace(s, '+', r'\x2b')
-      
-    return s
 
 
 def error_exit(msg):

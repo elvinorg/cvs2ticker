@@ -1,11 +1,11 @@
-#! /usr/bin/env python
+#! /usr/local/dstc/alpha-dec-osfV4.0/bin/python
 #############################################################################
 #
 #              Tickertape
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.13 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.14 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.13 $"[11:-2]
+__version__ = "$Revision: 1.14 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -59,7 +59,7 @@ MAIL_DOMAIN   = "dstc.edu.au"
 #############################################################################
 #############################################################################
 
-import base64, cgi, os, pickle, popen2, regsub, string, sys, time, urllib
+import base64, cgi, exceptions, os, pickle, popen2, regsub, string, sys, time, traceback, urllib
 
 
 #############################################################################
@@ -387,7 +387,7 @@ def log(str_file):
 
 #############################################################################
 
-def error(msg):
+def error(msg, e=None):
     """Print a HTML usage message."""
     
     send('Content-type: text/plain\n\n')
@@ -397,6 +397,11 @@ def error(msg):
     send('Required arguments are ...\n')
     send('user  -- string user name\n')
     send('dict  -- pickled dictionary of parsed CVS log message\n\n')
+
+    send('Traceback\n')
+    if e:
+        for s in traceback.format_exception(sys.exc_type, sys.exc_value, sys.exc_traceback):
+            send(s)
 
     return
 
@@ -432,7 +437,12 @@ if __name__ == "__main__":
         try:
             raw_str = sys.argv[2]
 
-            if string.find(raw_str, '\\') >= 0:
+            if raw_str[0] == "\\" or raw_str[0] == "%":
+                # new-style escaping
+                raw_str = urllib.unquote(raw_str)
+                str_pkl = string.replace(raw_str, "\\", "")
+
+            else:
                 # backward compatibility.  \x escapes are no-longer generated
                 raw_str = string.replace(raw_str, r'\x0a', '\012')
                 raw_str = string.replace(raw_str, r'\x3d', '=')
@@ -440,15 +450,13 @@ if __name__ == "__main__":
 
                 str_pkl = base64.decodestring(raw_str)
 
-            else:
-                # new-style escaping
-                str_pkl = urllib.unquote(raw_str)
-
             # unpack
             d_cvs = pickle.loads(str_pkl)
 
-        except:
-            error("UnPickling error")
+        except exceptions.Exception, e:
+            error("URL decoding error", e)
+            send('Pickle arg\n')
+            send(sys.argv[2])
             sys.exit(0)
 
         #-- start HTML output
