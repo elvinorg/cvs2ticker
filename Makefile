@@ -17,9 +17,9 @@ install-shared:
 	chmod 664 /opt/share/stow/cvs2ticker-$(VERSION)/bin/cvs2ticker.py
 	chgrp local /opt/share/stow/cvs2ticker-$(VERSION)/bin/cvs2ticker.py
 
-	cp cvs2web.py  /www/internal/cgi-bin
-	chmod 775 /www/internal/cgi-bin/cvs2web.py
-	chgrp www /www/internal/cgi-bin/cvs2web.py
+	cp cvs2web.py  /projects/www/internal/cgi-bin
+	chmod 775 /projects/www/internal/cgi-bin/cvs2web.py
+	chgrp www /projects/www/internal/cgi-bin/cvs2web.py
 
 
 install-exec:
