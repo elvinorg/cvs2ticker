@@ -1,8 +1,0 @@
-#! /bin/sh
-
-echo "cvs2ticker error:"
-echo "This is a dummy file that should be replaced during"
-echo "installation.  If you see this when running cvs2ticker,"
-echo "your install broke.  Mail elvin@dstc.com for help."
-
-exit 1
