@@ -14,10 +14,10 @@ install:
 	chmod 664 $(INSTALL_ROOT)/bin/cvs2ticker.py
 	chgrp local $(INSTALL_ROOT)/bin/cvs2ticker.py
 
-	mkdir -p $(INSTALL_ROOT)/man
-	cp cvs2ticker.1 $(INSTALL_ROOT)/man
-	chmod 664 $(INSTALL_ROOT)/man/cvs2ticker.1
-	chgrp local $(INSTALL_ROOT)/man/cvs2ticker.1
+	mkdir -p $(INSTALL_ROOT)/man/man1
+	cp cvs2ticker.1 $(INSTALL_ROOT)/man/man1
+	chmod 664 $(INSTALL_ROOT)/man/man1/cvs2ticker.1
+	chgrp local $(INSTALL_ROOT)/man/man1/cvs2ticker.1
 
 	cp cvs2web.py $(CGI_ROOT)
 	chmod 775 $(CGI_ROOT)/cvs2web.py
