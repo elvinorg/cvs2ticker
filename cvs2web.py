@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.9 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.10 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -25,13 +25,13 @@
 ########################################################################
 """
 
-this file is a CGI script which produces a download request page for a
-package.  it is generic, in that it takes a number of parameters
-supplying the package name, available formats, etc etc
+cvs2web - takes CVS commit information encoded by cvs2ticker and presents
+it on the web. Allows viewing the file, diff, log or linking to cvsweb.
+
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 
 #############################################################################
