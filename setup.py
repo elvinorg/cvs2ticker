@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 ########################################################################
-#  Copyright (C) DSTC Pty Ltd (ACN 052 372 577) 2000-2001.
+#  Copyright (C) DSTC Pty Ltd (ACN 052 372 577) 2000-2002.
 #  All Rights Reserved.
 #
 #  This software is the property of the DSTC Pty Ltd.  Use of this
@@ -24,7 +24,7 @@
 #  this software.
 ########################################################################
 
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 ########################################################################
 
@@ -36,7 +36,7 @@ setup (name="cvs2ticker",
        author="David Arnold",
        author_email="elvin@dstc.com",
        url="http://elvin.dstc.com/projects/cvs2ticker/",
-       licence="Copyright (C) DSTC, 2000-2001.",
+       licence="Copyright (C) DSTC, 2000-2002.",
        long_description="""
        This package provides a python script that is run by CVS that logs
        messages via Elvin suitable for tickertape. It creates a shared
