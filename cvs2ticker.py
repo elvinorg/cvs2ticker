@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.4 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.5 $
 # Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ defaults to 'CVS', and all CVS updates will scroll by thereafter.
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
 
 ########################################################################
@@ -155,7 +155,12 @@ def log_to_ticker(ticker_group, repository, rep_dir):
 
 
     #-- create tickertape message
-    msg = "In %s:" % repository
+    str_dir = d_cvs["Repository-Directory"]
+    str_rep = d_cvs["Repository-Root"]
+    rep_rel_path = str_dir[len(str_rep)+1:]
+    module = string.split(rep_rel_path, "/")[0]
+
+    msg = "In %s:" % module
     
     if d_notify[d_section[ADDED_FILES]]:
 	msg = msg + " Added " + d_notify[d_section[ADDED_FILES]]
