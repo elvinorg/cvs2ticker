@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.10 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.11 $
 # Copyright:   (C) 1998-2000, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 
 ########################################################################
@@ -160,7 +160,6 @@ def log_to_ticker(ticker_group, repository, rep_dir):
             
             else:
                 extratext = extratext + ' ' + line
-
 
     #-- add non-parsed text
     d_notify["Extras"] = extratext
