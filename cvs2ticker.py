@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.7 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.8 $
 # Copyright:   (C) 1998-1999, David Leonard, Bill Segall & David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ defaults to 'CVS', and all CVS updates will scroll by thereafter.
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 
 ########################################################################
@@ -218,12 +218,12 @@ if __name__ == '__main__':
 
     #-- parse commandline args
     progname = os.path.basename(sys.argv[0])
-    USAGE = "Usage: %s options\n" \
+    Usage = "Usage: %s options\n" \
 	    "[-d directory]  absolute path to CVS repository\n" \
 	    "[-h host]       hostname for Elvin server (default elvin)\n" \
 	    "[-p port]       port number for Elvin server (default 5678)\n" \
 	    "[-g group]      Tickertape group for notifications\n" \
-	    "[-r repository] name of repository\n" % (progname,)
+	    "[-r repository] name of repository\n" % progname
 
     # Parse the args to get the optional host and port, then connect to Elvin
     rep_dirs = []
@@ -236,12 +236,13 @@ if __name__ == '__main__':
     port = None
     group = None
     repository = None
-
+    
     try:
 	(optlist,args) = getopt.getopt(sys.argv[1:], "d:p:h:g:r:")
     except:
-	sys.stderr.write(Usage + "Failed to process the arglist\n")
-	print optlist, args
+        sys.stderr.write(Usage + "Failed to process the arglist\n")
+	# print optlist, args - fixme: optlist and args not defined here?
+        # wotcha up to davey?? (br) 
 	sys.exit(1)
     else:
 	for (opt, arg) in optlist:
