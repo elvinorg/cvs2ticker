@@ -7,7 +7,7 @@
 cvs2ticker \- CVS loginfo producer for Tickertape
 .SH SYNOPSIS
 .B tickertape
-[\-g group] [\-h host] [\-p port] [\-n name] path
+[\-g group] [\-e elvin-url]* [\-n name] path
 .SH FLAGS
 .PP
 .TP 4
@@ -15,12 +15,8 @@ cvs2ticker \- CVS loginfo producer for Tickertape
 The name of the Tickertape group to which notifications are sent.  If
 not specified, defaults to CVS.
 .TP 4
-\-h
-Host name for the Elvin server.  Defaults to
-.IR elvin \.
-.TP 4
-\-p
-Port number for the Elvin server.  Defaults to 5678.
+\-e
+elvin-url that describes path to elvin server. Defaults to discovery
 .TP 4
 \-n
 Name of the repository.  This is a user-friendly name for the
