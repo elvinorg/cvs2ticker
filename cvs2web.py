@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.14 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.15 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.14 $"[11:-2]
+__version__ = "$Revision: 1.15 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -41,6 +41,10 @@ __version__ = "$Revision: 1.14 $"[11:-2]
 
 CGI_URL       = "/cgi-bin"
 CVS2WEB_URL   = CGI_URL + "/cvs2web.py"
+
+# Set BUGZILLA_URL to the empty string if you don't use Bugzilla
+BUGZILLA_URL = "http://elvin.dstc.com/bugzilla/show_bug.cgi?id=%s"
+# BUGZILLA_URL = ""
 
 # Set CVSWEB_URL to the empty string if you don't use CVSWeb
 CVSWEB_URL    = CGI_URL + "/cvsweb.cgi"
@@ -183,7 +187,15 @@ def log_msg(d_cvs):
     send('<tr>\n', 6)
     send('<td bgcolor="#c0c0c0">\n', 8)
     send("<pre>\n\n", 10)
-    send(wrap(d_cvs["Log-Message"]))
+
+    if BUGZILLA_URL:
+        bugzilla_url = BUGZILLA_URL % ('\\2')
+        replacement = '<a href="%s">\\1</a>' % (bugzilla_url)
+        send(regsub.gsub('\(bug #?\([0-9]*\)\)', replacement, wrap(d_cvs["Log-Message"])))  
+        
+    else:
+	send(wrap(d_cvs["Log-Message"]))
+
     send("\n</pre>\n", 10)
     send("    </td>\n  </tr>\n</table>\n", 4)
     return
