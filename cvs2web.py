@@ -5,8 +5,8 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.12 $
-# Copyright:   (C) 1999, David Arnold.
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.13 $
+# Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.12 $"[11:-2]
+__version__ = "$Revision: 1.13 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -59,7 +59,7 @@ MAIL_DOMAIN   = "dstc.edu.au"
 #############################################################################
 #############################################################################
 
-import base64, cgi, os, pickle, popen2, regsub, string, sys, time
+import base64, cgi, os, pickle, popen2, regsub, string, sys, time, urllib
 
 
 #############################################################################
@@ -430,10 +430,21 @@ if __name__ == "__main__":
 
     else:
         try:
-            raw_str = string.replace(sys.argv[2], r'\x0a', '\012')
-            raw_str = string.replace(raw_str, r'\x3d', '=')
-            raw_str = string.replace(raw_str, r'\x2b', '+')
-            str_pkl = base64.decodestring(raw_str)
+            raw_str = sys.argv[2]
+
+            if string.find(raw_str, '\\') >= 0:
+                # backward compatibility.  \x escapes are no-longer generated
+                raw_str = string.replace(raw_str, r'\x0a', '\012')
+                raw_str = string.replace(raw_str, r'\x3d', '=')
+                raw_str = string.replace(raw_str, r'\x2b', '+')
+
+                str_pkl = base64.decodestring(raw_str)
+
+            else:
+                # new-style escaping
+                str_pkl = urllib.unquote(raw_str)
+
+            # unpack
             d_cvs = pickle.loads(str_pkl)
 
         except:
