@@ -11,7 +11,7 @@ all:
 install:
 	mkdir -p $(INSTALL_ROOT)/bin
 	cp cvs2ticker.py $(INSTALL_ROOT)/bin
-	chmod 664 $(INSTALL_ROOT)/bin/cvs2ticker.py
+	chmod 775 $(INSTALL_ROOT)/bin/cvs2ticker.py
 	chgrp local $(INSTALL_ROOT)/bin/cvs2ticker.py
 
 	mkdir -p $(INSTALL_ROOT)/man/man1
