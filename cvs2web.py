@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.4 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.5 $
 # Copyright:   (C) 1999, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ supplying the package name, available formats, etc etc
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
 
 #############################################################################
@@ -125,9 +125,14 @@ def user_info(user, d_cvs):
     logname = "cvs%20user"
 
     #-- determine module name (from working & repository paths)
-    module = "elvin"
+    str_dir = d_cvs["Repository-Directory"]
+    module_start = string.find(str_dir, d_cvs["Repository"])
+    if module_start != 0:
+	return
+    module_path = str_dir[len(d_cvs["Repository"])+1:]
+    module = string.split(module_path, "/")[0]
     
-    send('<tt><b>cvs commit</b></tt> by %s' % user, 4)
+    send('<tt><b>cvs commit</b></tt> in <i>%s</i> by <i>%s</i>' % (module, user), 4)
     send(' [<a href="mailto:%s@dstc.edu.au">mail</a>]' % user, 4)
     send(' [<a href="/cgi-bin/ticker.py?%s+10+%s+%s+CVS">ticker</a>]<p>\n' % \
          (logname, user, module), 4)
@@ -157,17 +162,20 @@ def add_info(d_cvs):
     if not d_cvs["Added-Files"]:
         return
     
+    #-- find the module name(s)
+    str_dir = d_cvs["Repository-Directory"]
+    str_rep = d_cvs["Repository"]
+    rep_rel_path = str_dir[len(str_rep)+1:]
+    mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
+    
     send("<dl>\n  <dt>Added files:\n", 4)
 
-    str_dir = d_cvs["Repository-Directory"]
-    str_module = os.path.basename(str_dir)
-    
     for file in string.split(d_cvs["Added-Files"]):
         full_path = os.path.join(str_dir, file)
         
-        send("<dd>%s" % file)
+        send("<dd>%s/%s" % (mod_rel_path, file))
         send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (str_module, file), 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
         
     send("</dl>", 4)
     send("<p>", 4)
@@ -176,6 +184,8 @@ def add_info(d_cvs):
 
 
 def modify_info(d_cvs):
+    """Print info on modified files."""
+
     if not d_cvs.has_key("Modified-Files"):
         return
 
@@ -184,17 +194,20 @@ def modify_info(d_cvs):
     
     send("<dl>\n  <dt>Modified files:\n", 4)
 
+    #-- find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
-    str_module = os.path.basename(str_dir)
+    str_rep = d_cvs["Repository"]
+    rep_rel_path = str_dir[len(str_rep)+1:]
+    mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
     
     for file in string.split(d_cvs["Modified-Files"]):
         full_path = os.path.join(str_dir, file)
         
-        send('<dd>%s' % file, 6)
+        send('<dd>%s/%s' % (mod_rel_path, file), 6)
         send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
         send(' [<a href="/cgi-bin/cvs2web.py?diff+%s">diff</a>]' % full_path, 6)
         send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (str_module, file), 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
         
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
@@ -209,16 +222,28 @@ def import_info(d_cvs):
     if not d_cvs["Imported-Files"]:
         return
 
+    #-- find the module name(s)
+    str_dir = d_cvs["Repository-Directory"]
+    str_rep = d_cvs["Repository"]
+    rep_rel_path = str_dir[len(str_rep)+1:]
+    mod_rel_path = string.join(string.split(rep_rel_path, "/")[1:], "/")
+    
+
     str_dir = os.path.dirname(d_cvs["Repository-Directory"])
+    module_start = string.find(str_dir, d_cvs["Repository"])
+    if module_start != 0:
+	return
+    str_module = str_dir[len(d_cvs["Repository"])+1:]
+    
     send("<dl>\n  <dt>Imported files:\n", 4)
 
     for file in string.split(d_cvs["Imported-Files"]):
         full_path = os.path.join(str_dir, file)
 
-        send('<dd>%s' % file, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' %full_path, 6)
-        send(' [<a href="/cgi-bin/cvsweb.cgi/%s">cvsweb</a>]' %file, 6)
+        send('<dd>%s/%s' % (mod_rel_path, file), 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?file+%s">file</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvs2web.py?log+%s">log</a>]' % full_path, 6)
+        send(' [<a href="/cgi-bin/cvsweb.cgi/%s/%s">cvsweb</a>]' % (rep_rel_path, file), 6)
 
     send("\n</dl>\n", 4)
     send("<p>\n", 4)
@@ -291,7 +316,7 @@ def diff(str_file):
         prev = "%s.%s" % (major, str(string.atoi(minor) - 1))
 
         #-- run rcsdiff
-        pout, pin, perr = popen2.popen3("cd /tmp; /usr/local/bin/rcsdiff -u -r%s %s,v 2>&1" % (prev, str_file))
+        pout, pin, perr = popen2.popen3("cd /tmp; /usr/local/bin/rcsdiff -r%s -u %s,v 2>&1" % (prev, str_file))
         s = pout.read()
         pout.close()
         pin.close()
