@@ -5,7 +5,7 @@
 #              CGI script for cvs2ticker URLs
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.20 $
+# Version:     $RCSfile: cvs2web.py,v $ $Revision: 1.21 $
 # Copyright:   (C) 1999-2002, David Arnold.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "David Arnold <davida@pobox.com>"
-__version__ = "$Revision: 1.20 $"[11:-2]
+__version__ = "$Revision: 1.21 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -43,10 +43,10 @@ CGI_URL       = "/cgi-bin"
 CVS2WEB_URL   = CGI_URL + "/cvs2web.py"
 
 # Set BUGZILLA_URL to the empty string if you don't use Bugzilla
-BUGZILLA_URL = "http://elvin.dstc.com/bugzilla/show_bug.cgi?id=%s"
+BUGZILLA_URL = "http://www.tickertape.org/bugzilla/show_bug.cgi?id=%s"
 # BUGZILLA_URL = ""
 
-# Set CVSWEB_URL to the empty string if you don't use CVSWeb
+# Set CVSWEB_URL to the empty string if you don't use CVSWeb or ViewCVS
 CVSWEB_URL    = CGI_URL + "/cvsweb.cgi"
 # CVSWEB_URL    = ""
 
@@ -56,7 +56,7 @@ TICKER_URL    = CGI_URL + "/ticker.py"
 
 # Set MAILDOMAIN to the empty string if all users don't share a domain
 # for mailto links
-MAIL_DOMAIN   = "dstc.edu.au"
+MAIL_DOMAIN   = "tickertape.org"
 # MAIL_DOMAIN   = ""
 
 # Set RCSPATH to the location of the installed RCS tools (with a
