@@ -41,9 +41,9 @@ configuration variables.
 	CVS2WEB_URL	- As above, the URL of cvs2web.py. Required.
 	CVSWEB_URL	- The URL of cvsweb.cgi. If you do not use CVSWeb, set
 			  this to the empty string ("").
-	BUGZILLA_URL    - A format string, with one string argument for the 
-                          bug number. Set to the empty string if you do not 
-                          use Bugzilla.
+	BUGZILLA_URL	- A format string, with one string argument for the 
+			  bug number. Set to the empty string if you do not 
+			  use Bugzilla.
 	TICKER_URL	- The URL of ticker.py. If you do not use CGITicker,
 			  set this to the empty string ("").
 	MAIL_DOMAIN	- A domain name to append to user names for use in
@@ -108,4 +108,4 @@ Congratulations, all future CVS writes will be notified via Elvin and
 Tickertape!
 
 
-@(#) $Id: INSTALL,v 1.6 2002/09/06 11:39:11 ilister Exp $
+@(#) $Id: INSTALL,v 1.7 2002/11/27 00:21:16 ilister Exp $
