@@ -24,7 +24,7 @@
 #  this software.
 ########################################################################
 
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 ########################################################################
 
@@ -42,7 +42,7 @@ setup (name="cvs2ticker",
        messages via Elvin suitable for tickertape. It creates a shared
 	   awareness of changes to the CVS repository.""",
        
-       scripts=["cvs2ticker.py", "cvs2web.py"],
+       scripts=["cvs2ticker.py", "cvs2ticker"],
        #packages=[""],
        data_files=[("man/man1", ["man/cvs2ticker.1"]),
                    ],
