@@ -16,7 +16,7 @@
 #     Australia
 #     Tel: +61 7 3365 4310
 #     Fax: +61 7 3365 4311
-#     Email: enquiries@dstc.edu.au
+#     Email: enquiries@dstc.com
 #
 #  This software is being provided "AS IS" without warranty of any
 #  kind.  In no event shall DSTC Pty Ltd be liable for damage of any
@@ -24,7 +24,7 @@
 #  this software.
 ########################################################################
 
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 ########################################################################
 
@@ -34,8 +34,8 @@ setup (name="cvs2ticker",
        version="1.3.0",
        description="Logs CVS messages to Elvin's tickertape clients",
        author="David Arnold",
-       author_email="elvin@dstc.edu.au",
-       url="http://elvin.dstc.edu.au/projects/cvs2ticker",
+       author_email="elvin@dstc.com",
+       url="http://elvin.dstc.com/projects/cvs2ticker/",
        licence="Copyright (C) DSTC, 2000-2001.",
        long_description="""
        This package provides a python script that is run by CVS that logs
