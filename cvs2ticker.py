@@ -5,7 +5,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.36 $
+# Version:     $RCSfile: cvs2ticker.py,v $ $Revision: 1.37 $
 # Copyright:   (C) 1998-1999 David Leonard.
 # Copyright:   (C) 1999-2003 Bill Segall, David Arnold and Ian Lister.
 #
@@ -30,7 +30,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'David Leonard <david.leonard@dstc.edu.au>'
-__version__ = "$Revision: 1.36 $"[11:-2]
+__version__ = "$Revision: 1.37 $"[11:-2]
 
 
 ########################################################################
@@ -82,6 +82,7 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
 USAGE = "Usage: %s [options] path\n" \
         "[-e elvin-url]  Elvin server if you want to be spcific\n" \
         "[-g group]      Tickertape group for notifications\n" \
+        "[-r group]      Tickertape group responses should go to\n" \
         "[-n name]       friendly name for the repository\n" \
         "path            absolute path to repository files\n"
 
@@ -103,10 +104,11 @@ def GetUserName():
     return user
 
 
-def log_to_ticker(ticker_group, repository, rep_dir, bastard):
+def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
     """Generate a notification dictionary describing the CVS event.
 
     *ticker_group*  -- Tickertape group to notify
+    *reply_group*   -- Tickertape group replies should go to
     *repository*    -- string repository name
     *rep_dir*       -- absolute path to repository
     Returns         -- dictionary for Elvin notification
@@ -242,6 +244,9 @@ def log_to_ticker(ticker_group, repository, rep_dir, bastard):
                      'Group': d_notify['TICKERTAPE'],
                      'From': d_notify['USER']})
 
+    if reply_group:
+        d_notify['Reply-To'] = reply_group;
+
     d_notify['Attachment'] = 'MIME-Version: 1.0\r\n' \
                              'Content-Type: text/uri-list\r\n' \
                              '\r\n' \
@@ -270,6 +275,7 @@ if __name__ == '__main__':
     #-- initialise
     urls = []
     group = None
+    reply_group = None
     repository = None
     d_notify = None
     bastard = 1
@@ -282,7 +288,7 @@ if __name__ == '__main__':
 
     #-- parse options
     try:
-        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:b")
+        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:r:b")
     except:
         error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
 
@@ -301,6 +307,12 @@ if __name__ == '__main__':
                 repository = arg
             else:
                 error_exit("Only one name specification allowed.")
+
+        if opt == '-r':
+            if not reply_group:
+                reply_group = arg
+            else:
+                error_exit("Only one reply group specification allowed.")
 
         if opt == '-b':
             bastard = 0
@@ -327,7 +339,7 @@ if __name__ == '__main__':
     user = GetUserName()
 
     #-- parse log message
-    d_notify = log_to_ticker(group, repository, rep_dir, bastard)
+    d_notify = log_to_ticker(group, reply_group, repository, rep_dir, bastard)
     if d_notify:
         e.notify(d_notify)
 
