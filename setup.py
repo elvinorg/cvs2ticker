@@ -38,12 +38,12 @@
 #
 # COPYRIGHT_END
 
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 from distutils.core import setup
 
 setup (name="cvs2ticker",
-       version="1.4.1",
+       version="1.4.2",
        description="Logs CVS messages to Elvin's tickertape clients",
        author="David Arnold",
        author_email="davida@pobox.com",

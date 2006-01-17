@@ -1,6 +1,6 @@
 #
 
-VERSION:=1.4.1
+VERSION:=1.4.2
 
 prefix=/usr/local
 CGI_ROOT=$(prefix)/cgi-bin
