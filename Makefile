@@ -23,7 +23,7 @@ dist:
 		cvs2ticker/cvs2ticker.1 \
 		cvs2ticker/cvs2ticker.py \
 		cvs2ticker/cvs2web.py \
-		setup.py \
+		cvs2ticker/setup.py \
 		cvs2ticker/Makefile \
 		cvs2ticker/COPYING \
 		cvs2ticker/INSTALL \
