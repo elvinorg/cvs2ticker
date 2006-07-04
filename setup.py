@@ -38,7 +38,7 @@
 #
 # COPYRIGHT_END
 
-__version__ = "$Revision: 1.11 $"[11:-2]
+__version__ = "$Revision: 1.12 $"[11:-2]
 
 from distutils.core import setup
 
@@ -48,7 +48,7 @@ setup (name="cvs2ticker",
        author="David Arnold",
        author_email="davida@pobox.com",
        url="http://www.tickertape.org/projects/cvs2ticker/",
-       licence="BSD",
+       license="BSD",
        long_description="""
        This package provides a python script that is run by CVS that logs
        messages via Elvin suitable for tickertape. It creates a shared
