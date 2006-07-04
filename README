@@ -40,9 +40,9 @@ for notification of events in distributed applications, and works well
 as a communications middleware.
 
 More information about the architecture, software and applications is
-available from the Mantara web site at
+available at
 
-    http://www.mantara.com/
+    http://www.elvin.org/
 
 What is Tickertape?
 -------------------
@@ -80,4 +80,4 @@ the CVSWeb web page at
     http://stud.fh-heilbronn.de/~zeller/cgi/cvsweb.cgi/
 
 
-@(#) $Id: README,v 1.4 2005/03/29 22:48:01 bill Exp $
+@(#) $Id: README,v 1.5 2006/07/04 09:30:29 d Exp $

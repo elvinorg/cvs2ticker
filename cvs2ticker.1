@@ -1,8 +1,45 @@
 .\" ***************************************************************
+.\" COPYRIGHT_BEGIN
+.\"
+.\" Copyright (C) 1998-2006 Mantara Software (ABN 17 105 665 594) 
+.\" All Rights Reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\"
+.\" * Redistributions of source code must retain the above
+.\"   copyright notice, this list of conditions and the following
+.\"   disclaimer.
+.\"
+.\" * Redistributions in binary form must reproduce the above
+.\"   copyright notice, this list of conditions and the following
+.\"   disclaimer in the documentation and/or other materials
+.\"   provided with the distribution.
+.\"
+.\" * Neither the name of Mantara Software nor the names
+.\"   of its contributors may be used to endorse or promote
+.\"   products derived from this software without specific prior
+.\"   written permission. 
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+.\" "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+.\" LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+.\" FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+.\" REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+.\" INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+.\" BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+.\" LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+.\" CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+.\" ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.\"
+.\" COPYRIGHT_END
 .\" ***************************************************************
 .\" 
-.\" name sect foot-centre foot-left  head-centre   origin  architecture
-.TH cvs2ticker 1  "April 2000"  "tickertape.org"  "User Commands" "tickertape.org" "tickertape Project"
+.\" name      sect foot-centre  foot-left         head-centre
+.TH cvs2ticker 1  "4 Jul 2006"  "tickertape.org" "tickertape.org"
 .SH NAME
 cvs2ticker \- CVS loginfo producer for Tickertape
 .SH SYNOPSIS
@@ -16,7 +53,8 @@ The name of the Tickertape group to which notifications are sent.  If
 not specified, defaults to CVS.
 .TP 4
 \-e
-elvin-url that describes path to elvin server. Defaults to discovery
+elvin-url that describes path to an Elvin Router. Defaults to use
+discovery to find a default router.
 .TP 4
 \-n
 Name of the repository.  This is a user-friendly name for the
@@ -48,15 +86,17 @@ A problem occurred.  See the debugging output for further information.
 .PP
 .IR cvs (1),
 .BR cvs2web (1),
-.IR elvin (1),
+.IR elvin (7),
 .IR jtickertape (1),
 .IR xtickertape (1)
 .PP
 .B "http://www.tickertape.org/"
-.SH AUTHOR
-.PP
-Original version by David Leonard with ongoing hacks by David Arnold
-and Bill Segall.
-.PP
+.\"
+.SH HISTORY
+.LP
+Original version by David Leonard.  Further development by the Elvin
+Project at DSTC.  Acquired by Mantara Software in 2003, and
+transferred to tickertape.org under a BSD licence.
+.\"
 .\" ***************************************************************
 

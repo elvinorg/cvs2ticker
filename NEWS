@@ -1,22 +1,22 @@
 NEWS
 
-??-???-200?
-- 1.4.2
-
+04-Jul-2006
+- 1.5.0
+  - First release from tickertape.org
 
 17-Jan-2006
 - 1.4.1
-	- Distribution and installation is now much improved
-	- Tickertape v3 message attributes added to emitted
-	  notifications
-	- Released to tickertape.org under a BSD license
+  - Distribution and installation is now much improved
+  - Tickertape v3 message attributes added to emitted
+    notifications
+  - Released to tickertape.org under a BSD license
 
 27-Nov-2002	Ian Lister <ilister@dstc.com>
 - 1.4.0
-	- Directory names are included in the notification
-	- cvs2web URLs are now encoded more safely
+  - Directory names are included in the notification
+  - cvs2web URLs are now encoded more safely
 
 06-Aug-2001	Bill Segall <bill@segall.net>
 - 1.3.0
-	- Use distutils for packaging
-	- python-elvin-4.1b1 compatibility
+  - Use distutils for packaging
+  - python-elvin-4.1b1 compatibility

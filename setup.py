@@ -2,8 +2,8 @@
 
 # COPYRIGHT_BEGIN
 #
-#    Copyright (C) Mantara Software (ABN 17 105 665 594) 1995-2004.
-#    All Rights Reserved.
+# Copyright (C) 2001-2006 Mantara Software (ABN 17 105 665 594).
+# All Rights Reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -38,17 +38,17 @@
 #
 # COPYRIGHT_END
 
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 from distutils.core import setup
 
 setup (name="cvs2ticker",
-       version="1.4.2",
+       version="1.5.0",
        description="Logs CVS messages to Elvin's tickertape clients",
        author="David Arnold",
        author_email="davida@pobox.com",
        url="http://www.tickertape.org/projects/cvs2ticker/",
-       licence="Copyright (C) Mantara, 2000-2004 (BSD licensed)",
+       licence="BSD",
        long_description="""
        This package provides a python script that is run by CVS that logs
        messages via Elvin suitable for tickertape. It creates a shared
