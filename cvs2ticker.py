@@ -6,9 +6,11 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $Id: cvs2ticker.py,v 1.39 2006/07/04 09:30:29 d Exp $
+# Version:     $Id: cvs2ticker.py,v 1.40 2006/09/18 23:35:41 d Exp $
 #
+# Copyright    (C) 1998-1999 David Leonard
 # Copyright    (C) 1998-2006 Mantara Software
+# Copyright    (C) 2006 David Arnold, Ian Lister, Bill Segall
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -49,7 +51,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'ticker-user@tickertape.org'
-__version__ = "$Revision: 1.39 $"[11:-2]
+__version__ = "$Revision: 1.40 $"[11:-2]
 
 
 ########################################################################

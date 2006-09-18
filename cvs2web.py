@@ -6,9 +6,10 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.23 2006/09/18 23:34:38 d Exp $
+# Version:     $Id: cvs2web.py,v 1.24 2006/09/18 23:35:41 d Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
+# Copyright    (C) 2006 David Arnold
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -51,7 +52,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.23 $"[11:-2]
+__version__ = "$Revision: 1.24 $"[11:-2]
 
 #############################################################################
 #############################################################################
