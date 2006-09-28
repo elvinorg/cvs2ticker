@@ -38,7 +38,7 @@
 #
 # COPYRIGHT_END
 
-__version__ = "$Revision: 1.12 $"[11:-2]
+__version__ = "$Revision: 1.13 $"[11:-2]
 
 from distutils.core import setup
 
@@ -55,9 +55,7 @@ setup (name="cvs2ticker",
        awareness of changes to the CVS repository.""",
        
        scripts=["cvs2ticker.py", "cvs2web.py"],
-       #packages=[""],
-       data_files=[("man/man1", ["cvs2ticker.1"]),
-                   ],
+       data_files=[("man/man1", ["cvs2ticker.1"])],
        )
 
 ########################################################################

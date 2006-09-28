@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#! /usr/bin/python
 ########################################################################
 # COPYRIGHT_BEGIN
 #
@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $Id: cvs2ticker.py,v 1.40 2006/09/18 23:35:41 d Exp $
+# Version:     $Id: cvs2ticker.py,v 1.41 2006/09/28 08:49:23 d Exp $
 #
 # Copyright    (C) 1998-1999 David Leonard
 # Copyright    (C) 1998-2006 Mantara Software
@@ -51,27 +51,15 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'ticker-user@tickertape.org'
-__version__ = "$Revision: 1.40 $"[11:-2]
+__version__ = "$Revision: 1.41 $"[11:-2]
 
 
 ########################################################################
-########################################################################
-#
-#  CONFIGURATION SECTION
-#
 
-DEFAULT_GROUP = "CVS"
-TIMEOUT       = 10
-CVS2WEB_URL   = "http://www.tickertape.org/cgi-bin/cvs2web.py"
-
-
-#  end of configuration
-########################################################################
-########################################################################
-
-import base64, os, pickle, sys, getopt, random, string, time, urllib
+import base64, getopt, os, pickle, sha, string, sys, time, urllib
 import elvin
 
+VERSION = "1.5.0"
 
 ########################################################################
 
@@ -100,66 +88,49 @@ d_section     = {LOG_MESSAGE:    "Log-Message",
                  STATUS:         "Status",
                  }
 
-USAGE = "Usage: %s [options] path\n" \
-        "[-e elvin-url]  Elvin server if you want to be spcific\n" \
-        "[-g group]      Tickertape group for notifications\n" \
-        "[-r group]      Tickertape group responses should go to\n" \
-        "[-n name]       friendly name for the repository\n" \
-        "path            absolute path to repository files\n"
-
-
 ########################################################################
 
-def GetUserName():
-    """Find and return the user name
-
-    Raises Exc_noname"""
-
-    if os.environ.has_key('LOGNAME'):
-        user = os.environ['LOGNAME']
-    elif os.environ.has_key('USER'):
-        user = os.environ['USER']
-    else:
-        raise Exc_noname, "Can't get user name"
-
-    return user
-
-
-def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
+def log_to_ticker(**config):
     """Generate a notification dictionary describing the CVS event.
 
-    *ticker_group*  -- Tickertape group to notify
-    *reply_group*   -- Tickertape group replies should go to
-    *repository*    -- string repository name
-    *rep_dir*       -- absolute path to repository
-    Returns         -- dictionary for Elvin notification
+    *config*  -- keyword arguments.  See below.
+    Returns   -- dictionary for Elvin notification
 
-    This is pretty ugly ... one day i should tidy up dl's old stuff.
+    Keyword arguments:
+      user            -- User's login name
+      group           -- Tickertape group for postings
+      reply_to        -- Tickertape group for replies
+      repository      -- Repository name
+      repository_path -- Absolute path of repository root directory
+      nag             -- Nag about empty log messages
+
+    FIXME: This is ugly ... one day i should tidy up dl's old stuff.
     """
 
-    #-- initialise parsed info
+    # Initialise parsed info
     d_notify = {}
     cur_section = None
     extratext = ""
     found_files = 0    # whether there have been any added/removed/etc
+    user = config["user"]
 
     for key in d_section.values():
         d_notify[key] = ""
 
-    #-- read and process log message
+    # Read and process log message
     lines = sys.stdin.readlines()
     for line in lines:
 
-        #-- remove trailing newline
+        # Remove trailing newline
         if line[-1] == "\n":
             line = line[:-1]
 
-        #-- skip blank lines
+        # Skip blank lines
         if not string.strip(line):
             continue
 
         if line in d_section.keys():
-            #-- handle multi-line sections
+            # Handle multi-line sections
             cur_section = d_section[line]
 
         elif line[0] == "\t":
@@ -187,7 +158,7 @@ def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
         else:
             cur_section = None
 
-            #-- process remaining lines
+            # Process remaining lines
             if string.find(line, TEXT_INDIR) == 0:
                 d_notify["Working-Directory"] = line[len(TEXT_INDIR):]
 
@@ -201,24 +172,30 @@ def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
                     d_notify[IMPORTED_KEY] = d_notify[IMPORTED_KEY] + ' ' + line[2:]
 
             elif line[0:2] == "I ":
-                #-- ignore these, since CVS does ...
+                # Ignore these, since CVS does ...
                 pass
 
             else:
                 extratext = extratext + ' ' + line
 
-    #-- add non-parsed text
+    # Add non-parsed text
     d_notify["Extras"] = extratext
     d_notify["Original"] = reduce(lambda s,e: s+e, lines, "")
-    d_notify["Repository"] = repository
-    d_notify["Repository-Root"] = rep_dir
+    d_notify["Repository"] = config["repository"]
+    d_notify["Repository-Root"] = config["repository_path"]
     str_dir = d_notify["Repository-Directory"]
-    rep_rel_path = str_dir[len(rep_dir)+1:]
+    rep_rel_path = str_dir[len(config["repository_path"]):]
     module = string.replace(string.split(rep_rel_path, "/")[0], '+', '%2b')
     d_notify["Relative-Directory"] = rep_rel_path
     d_notify["Module"] = module
 
-    #-- create tickertape message
+    # Generate Message-Id
+    hasher = sha.new()
+    hasher.update(str(time.time()))
+    hasher.update(str(d_notify))
+    msg_id = hasher.hexdigest()
+
+    # Create tickertape message
     msg = "In %s:" % rep_rel_path
 
     if d_notify[d_section[ADDED_FILES]]:
@@ -236,8 +213,8 @@ def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
     if d_notify.has_key(PLAIN_KEY):
         msg = msg + " (tag " + d_notify[PLAIN_KEY] + ")"
 
-    #-- the bill trap
-    if bastard:
+    # The bill trap
+    if config["nag"]:
         if not string.strip(d_notify[d_section[LOG_MESSAGE]]):
             d_notify[d_section[LOG_MESSAGE]] = "%s, the slack bastard, didn't supply a log message." % user
 
@@ -246,27 +223,27 @@ def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
     else:
         msg = msg + d_notify[d_section[LOG_MESSAGE]]
 
-    #-- create attachment URL
-    str_url = CVS2WEB_URL
+    # Create attachment URL
+    str_url = config["cvs2web_url"]
     str_url = str_url + "?%s+%s" % (user, urllib.quote(pickle.dumps(d_notify)))
 
-    #-- add tickertape-specific attributes
-    d_notify.update({'TIMEOUT' : TIMEOUT,
+    # Add tickertape-specific attributes
+    d_notify.update({'TIMEOUT' : int(config["timeout"]),
                      'TICKERTEXT' : msg,
-                     'TICKERTAPE' : ticker_group,
+                     'TICKERTAPE' : config["group"],
                      'USER' : user,
                      'MIME_TYPE':   "x-elvin/url",
                      'MIME_ARGS':   str_url,
-                     'Message-Id':  str(random.randint(1, 0x7ffffff))})
+                     'Message-Id': msg_id})
 
-    #-- add v3 tickertape attributes
+    # Add v3 tickertape attributes
     d_notify.update({'Timeout': d_notify['TIMEOUT'] * 60,
                      'Message': d_notify['TICKERTEXT'],
                      'Group': d_notify['TICKERTAPE'],
                      'From': d_notify['USER']})
 
-    if reply_group:
-        d_notify['Reply-To'] = reply_group;
+    if config.has_key("reply_to"):
+        d_notify['Reply-To'] = config["reply_to"]
 
     d_notify['Attachment'] = 'MIME-Version: 1.0\r\n' \
                              'Content-Type: text/uri-list\r\n' \
@@ -275,94 +252,112 @@ def log_to_ticker(ticker_group, reply_group, repository, rep_dir, bastard):
     return d_notify
 
 
-def error_exit(msg):
-    """Print error message and exit."""
+def usage(msg=None):
+    """Print error and usage message."""
 
-    #-- get executable name
+    # Get executable name
     progname = os.path.basename(sys.argv[0])
 
-    #-- message
-    sys.stderr.write(USAGE % progname)
-    sys.stderr.write("\n%s\n\n" % msg)
+    # Message
+    if msg:
+        sys.stderr.write("%s\n" % msg)
 
-    #-- quit
-    sys.exit(1)
+    sys.stderr.write("Usage: %s -f config_file\n" % progname)
+
+    return
+
+
+def read_config(path):
+    """Parse configuration file."""
+
+    d = {}
+
+    try:
+        f = open(path)
+        lines = f.readlines()
+        f.close()
+    except:
+        return
+    
+    for line in lines:
+
+        line = line.strip()
+
+        if len(line) == 0 or line[0] == "#":
+            continue
+
+        if line.find("=") == -1:
+            return
+
+        key, value = line.split("=", 1)
+
+        d[key.strip()] = value.strip()
+
+    return d
 
 
 ########################################################################
 
 if __name__ == '__main__':
 
-    #-- initialise
-    urls = []
-    group = None
-    reply_group = None
-    repository = None
+    # Initialise
     d_notify = None
-    bastard = 1
+    config_path = ""
+    config = {}
 
-    #-- check mandatory args
-    if len(sys.argv) < 3:
-        error_exit("Not enough arguments.")
-
-    rep_dir = sys.argv[-1]
-
-    #-- parse options
+    # Parse options
     try:
-        (optlist,args) = getopt.getopt(sys.argv[1:-1], "e:g:n:r:b")
+        (optlist,args) = getopt.getopt(sys.argv[1:], "f:hHv")
     except:
-        error_exit("Failed to process the arglist: %s" % str(sys.argv[1:-1]))
+        usage("Failed to process the arglist: %s" % str(sys.argv[1:]))
+        sys.exit(1)
 
     for (opt, arg) in optlist:
-        if opt == '-e':
-            urls.append(arg)
+        if opt == '-f':
+            config_path = arg
 
-        if opt == '-g':
-            if not group:
-                group = arg
-            else:
-                error_exit("Only one group specification allowed.")
+        if opt in ['-h', '-H', '-?']:
+            usage()
+            sys.exit(0)
 
-        if opt == '-n':
-            if not repository:
-                repository = arg
-            else:
-                error_exit("Only one name specification allowed.")
+        if opt == '-v':
+            print VERSION
+            sys.exit(0)
 
-        if opt == '-r':
-            if not reply_group:
-                reply_group = arg
-            else:
-                error_exit("Only one reply group specification allowed.")
+    # Read config file
+    if not config_path:
+        usage("Missing required option -f")
+        sys.exit(1)
 
-        if opt == '-b':
-            bastard = 0
+    config = read_config(config_path)
+    if not config:
+        usage("Error reading config file")
+        sys.exit(1)
 
-    #-- set default option values
-    if not group:
-        group = DEFAULT_GROUP
-
-    if not repository:
-        repository = rep_dir
-
-    c = elvin.client()
-    e = c.connection()
-
-    for url in urls:
-        e.append_url(url)
-        e.set_discovery(0)
+    # Get user name
+    if os.environ.has_key('LOGNAME'):
+        config["user"] = os.environ['LOGNAME']
+    elif os.environ.has_key('USER'):
+        config["user"] = os.environ['USER']
     else:
-        e.set_discovery(1)
+        usage("Error: cannot determine user name")
+        sys.exit(1)
 
-    e.open()
-
-    #-- get user
-    user = GetUserName()
-
-    #-- parse log message
-    d_notify = log_to_ticker(group, reply_group, repository, rep_dir, bastard)
+    # Parse message and send notification
+    d_notify = log_to_ticker(**config)
     if d_notify:
+        c = elvin.client()
+        e = c.connection()
+
+        if config["elvin_url"]:
+            e.append_url(config["elvin_url"])
+            e.set_discovery(0)
+        else:
+            e.set_discovery(1)
+
+        e.open()
         e.notify(d_notify)
+        e.close()
 
     sys.exit(0)
 

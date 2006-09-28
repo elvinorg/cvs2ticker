@@ -1,3 +1,4 @@
 include COPYING INSTALL MANIFEST.in README TODO NEWS
 include cvs2ticker.py cvs2web.py
 include cvs2ticker.1
+include cvs2ticker.conf
