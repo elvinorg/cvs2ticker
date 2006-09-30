@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.24 2006/09/18 23:35:41 d Exp $
+# Version:     $Id: cvs2web.py,v 1.25 2006/09/30 04:09:41 d Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
 # Copyright    (C) 2006 David Arnold
@@ -52,7 +52,7 @@ it on the web. Allows viewing the file, diff, log or linking to cvsweb.
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.24 $"[11:-2]
+__version__ = "$Revision: 1.25 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -97,13 +97,13 @@ import base64, cgi, exceptions, os, pickle, popen2, regsub, string, sys, time, t
 def send(txt, indent=0):
     """Write text to output."""
     
-    #-- create indent string
+    # Create indent string
     str_indent = " " * indent
 
-    #-- insert indent after carriage returns
+    # Insert indent after carriage returns
     txt = regsub.gsub("\n\(.\)", "\n%s\\1" % str_indent, txt)
 
-    #-- write
+    # Write
     sys.stdout.write("%s%s" % (str_indent, txt))
     
     return
@@ -114,7 +114,7 @@ def wrap(s, width=60):
 
     res = ""
     
-    #-- separate into paragraphs
+    # Separate into paragraphs
     lst_para = string.split(s, "\n")
     for para in lst_para:
         if len(para) <= width:
@@ -174,10 +174,10 @@ def end_body():
 def user_info(user, d_cvs):
     """Show the name of the user who performed the commit"""
 
-    #-- get the name of the person?
+    # Get the name of the person?
     logname = "cvs%20user"
 
-    #-- find the module name(s)
+    # Find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
     str_rep_name = d_cvs["Repository"]
@@ -235,7 +235,7 @@ def add_info(d_cvs):
     if not d_cvs["Added-Files"]:
         return
     
-    #-- find the module name(s)
+    # Find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
     str_rep_name = d_cvs["Repository"]
@@ -275,7 +275,7 @@ def modify_info(d_cvs):
     
     send("<dl>\n  <dt>Modified files:\n", 4)
 
-    #-- find the module name(s)
+    # Find the module name(s)
     str_dir = d_cvs["Repository-Directory"]
     str_rep = d_cvs["Repository-Root"]
     str_rep_name = d_cvs["Repository"]
@@ -313,7 +313,7 @@ def import_info(d_cvs):
     if not d_cvs["Imported-Files"]:
         return
 
-    #-- find the repository details
+    # Find the repository details
     str_rep = d_cvs["Repository-Root"]
     str_rep_name = d_cvs["Repository"]
     
@@ -392,10 +392,10 @@ def diff(str_file):
     send('Content-type: text/plain\n\n')
 
     try:
-        #-- check out working file in /tmp
+        # Check out working file in /tmp
         os.system("cd /tmp; " + RCSPATH + "co %s,v" % str_file)
 
-        #-- run rlog to get latest version number
+        # Run rlog to get latest version number
         p = os.popen(RCSPATH + "rlog %s" % str_file, "r")
         l = p.readlines()
         p.close()
@@ -404,18 +404,18 @@ def diff(str_file):
         major, minor = string.split(rev, ".")
         prev = "%s.%s" % (major, str(string.atoi(minor) - 1))
 
-        #-- run rcsdiff
+        # Run rcsdiff
         pout, pin, perr = popen2.popen3("cd /tmp; " + RCSPATH + "rcsdiff -r%s -u %s,v 2>&1" % (prev, str_file))
         s = pout.read()
         pout.close()
         pin.close()
         perr.close()
         
-        #-- return output
+        # Return output
         send(s)
 
     finally:
-        #-- remove checked out working file
+        # Remove checked out working file
         os.unlink("/tmp/%s" % os.path.basename(str_file))
 
     return
@@ -465,12 +465,12 @@ def error(msg, e=None):
 
 if __name__ == "__main__":
 
-    #-- check parameters
+    # Check parameters
     if len(sys.argv) != 3:
         error("Not enough arguments: %d, %s" % (len(sys.argv), str(sys.argv)))
         sys.exit(0)
 
-    #-- process arguments
+    # Process arguments
     user = sys.argv[1]
 
     if user == "log":
@@ -493,19 +493,19 @@ if __name__ == "__main__":
             raw_str = sys.argv[2]
 
             if raw_str[0] == "\\" or raw_str[0] == "%":
-                # new-style escaping
+                # New-style escaping
                 raw_str = urllib.unquote(raw_str)
                 str_pkl = string.replace(raw_str, "\\", "")
 
             else:
-                # backward compatibility.  \x escapes are no-longer generated
+                # Backward compatibility.  \x escapes are no-longer generated
                 raw_str = string.replace(raw_str, r'\x0a', '\012')
                 raw_str = string.replace(raw_str, r'\x3d', '=')
                 raw_str = string.replace(raw_str, r'\x2b', '+')
 
                 str_pkl = base64.decodestring(raw_str)
 
-            # unpack
+            # Unpack
             d_cvs = pickle.loads(str_pkl)
 
         except exceptions.Exception, e:
@@ -514,7 +514,7 @@ if __name__ == "__main__":
             send(sys.argv[2])
             sys.exit(0)
 
-        #-- start HTML output
+        # Start HTML output
         header()
 
         user_info(user, d_cvs)
