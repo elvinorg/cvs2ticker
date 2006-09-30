@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2ticker.py,v $
-# Version:     $Id: cvs2ticker.py,v 1.41 2006/09/28 08:49:23 d Exp $
+# Version:     $Id: cvs2ticker.py,v 1.42 2006/09/30 03:10:58 d Exp $
 #
 # Copyright    (C) 1998-1999 David Leonard
 # Copyright    (C) 1998-2006 Mantara Software
@@ -51,7 +51,7 @@ cvs2ticker - pass CVS loginfo messages through to tickertape
 
 """
 __author__ = 'ticker-user@tickertape.org'
-__version__ = "$Revision: 1.41 $"[11:-2]
+__version__ = "$Revision: 1.42 $"[11:-2]
 
 
 ########################################################################
@@ -301,9 +301,7 @@ def read_config(path):
 if __name__ == '__main__':
 
     # Initialise
-    d_notify = None
     config_path = ""
-    config = {}
 
     # Parse options
     try:
@@ -345,20 +343,27 @@ if __name__ == '__main__':
 
     # Parse message and send notification
     d_notify = log_to_ticker(**config)
-    if d_notify:
-        c = elvin.client()
-        e = c.connection()
+    if not d_notify:
+        usage("Error: failed to generate notification")
+        sys.exit(1)
 
-        if config["elvin_url"]:
-            e.append_url(config["elvin_url"])
-            e.set_discovery(0)
-        else:
-            e.set_discovery(1)
+    # Connect to Elvin
+    c = elvin.client()
+    e = c.connection()
 
-        e.open()
-        e.notify(d_notify)
-        e.close()
+    if config["elvin_url"]:
+        e.append_url(config["elvin_url"])
+        e.set_discovery(0)
+    else:
+        e.set_discovery(1)
 
+    e.open()
+
+    # Send notification
+    e.notify(d_notify)
+
+    # Exit
+    e.close()
     sys.exit(0)
 
 
