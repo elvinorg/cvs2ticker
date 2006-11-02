@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.26 2006/11/02 01:14:49 ilister Exp $
+# Version:     $Id: cvs2web.py,v 1.27 2006/11/02 01:17:13 ilister Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
 # Copyright    (C) 2006 David Arnold
@@ -53,7 +53,7 @@ ViewVC.
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.26 $"[11:-2]
+__version__ = "$Revision: 1.27 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -68,7 +68,7 @@ CVS2WEB_URL   = CGI_URL + "/cvs2web.py"
 BUGZILLA_URL = "http://www.tickertape.org/bugzilla/show_bug.cgi?id=%s"
 # BUGZILLA_URL = ""
 
-# Set VIEWVC_URL to the empty string if you don't use CVSWeb, ViewCVS or ViewVC
+# Set VIEWVC_URL to the empty string if you don't use CVSWeb or ViewVC
 VIEWVC_URL    = CGI_URL + "/cvsweb.cgi"
 # VIEWVC_URL    = ""
 
