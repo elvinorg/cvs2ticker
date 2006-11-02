@@ -78,7 +78,7 @@ for information on how to install and set up CVSWeb, or the ViewVC web page at
 for information on how to install and set up ViewVC.
 
 Make sure you know the name used to refer to the repository in cvsweb.conf (the
-key in the CVSROOT variable) or viewvc.conf (the key in the cvs_roots
+key in the CVSrepositories variable) or viewvc.conf (the key in the cvs_roots
 variable); you will need it later.
 
 5. Hook cvs2ticker into CVS
@@ -115,4 +115,4 @@ Congratulations, all future CVS writes will be notified via Elvin and
 Tickertape!
 
 
-@(#) $Id: INSTALL,v 1.9 2006/11/02 01:20:52 ilister Exp $
+@(#) $Id: INSTALL,v 1.10 2006/11/02 01:22:20 ilister Exp $
