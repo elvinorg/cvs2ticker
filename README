@@ -77,7 +77,7 @@ versions of a file.
 More information about CVSWeb, as well as CVSWeb itself, is available from
 the CVSWeb web page at
 
-    http://stud.fh-heilbronn.de/~zeller/cgi/cvsweb.cgi/
+    http://www.freebsd.org/projects/cvsweb.html
 
 What is ViewVC?
 ---------------
@@ -89,4 +89,4 @@ the ViewVC web page at
     http://www.viewvc.org/
 
 
-@(#) $Id: README,v 1.6 2006/11/02 01:14:49 ilister Exp $
+@(#) $Id: README,v 1.7 2006/11/02 01:20:52 ilister Exp $
