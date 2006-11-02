@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.25 2006/09/30 04:09:41 d Exp $
+# Version:     $Id: cvs2web.py,v 1.26 2006/11/02 01:14:49 ilister Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
 # Copyright    (C) 2006 David Arnold
@@ -47,12 +47,13 @@
 """
 
 cvs2web - takes CVS commit information encoded by cvs2ticker and presents
-it on the web. Allows viewing the file, diff, log or linking to cvsweb.
+it on the web. Allows viewing the file, diff, log or linking to cvsweb or
+ViewVC.
 
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.25 $"[11:-2]
+__version__ = "$Revision: 1.26 $"[11:-2]
 
 #############################################################################
 #############################################################################
