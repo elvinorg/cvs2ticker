@@ -1,0 +1,112 @@
+.\" ***************************************************************
+.\" COPYRIGHT_BEGIN
+.\"
+.\" Copyright (C) 2006 Ian Lister
+.\" All Rights Reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\"
+.\" * Redistributions of source code must retain the above
+.\"   copyright notice, this list of conditions and the following
+.\"   disclaimer.
+.\"
+.\" * Redistributions in binary form must reproduce the above
+.\"   copyright notice, this list of conditions and the following
+.\"   disclaimer in the documentation and/or other materials
+.\"   provided with the distribution.
+.\"
+.\" * Neither the name of Mantara Software nor the names
+.\"   of its contributors may be used to endorse or promote
+.\"   products derived from this software without specific prior
+.\"   written permission. 
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+.\" "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+.\" LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+.\" FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+.\" REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+.\" INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+.\" BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+.\" LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+.\" CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+.\" ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.\"
+.\" COPYRIGHT_END
+.\" ***************************************************************
+.\" 
+.TH svn2ticker 1  "3 Nov 2006"  "tickertape.org" "tickertape.org"
+.SH "NAME"
+svn2ticker \- send Tickertape notification describing a change to a Subversion repository
+.SH "SYNOPSIS"
+\fBsvn2ticker\fP [ \-n ] \-f \fIconfig-file\fP \-c commit -r \fIrepository\fP -v \fIrevision\fP
+.sp
+\fBsvn2ticker\fP [ \-n ] \-f \fIconfig-file\fP \-c propchange -r \fIrepository\fP -v \fIrevision\fP -a \fIauthor\fP -p \fIproperty\fP -A \fIaction\fP
+.sp
+\fBsvn2ticker\fP [ \-n ] \-f \fIconfig-file\fP \-c lock -r \fIrepository\fP -v -a \fIauthor\fP
+.sp
+\fBsvn2ticker\fP [ \-n ] \-f \fIconfig-file\fP \-c unlock -r \fIrepository\fP -v -a \fIauthor\fP
+.sp
+\fBsvn2ticker\fP \--help | \--version
+.SH FLAGS
+.LP
+.TP
+\-f \fIconfig-file\fP
+Path to configuration file, compatible with \fBcvs2ticker\fP.
+.TP
+\-c \fIcommand\fP
+The action that has been performed on the repository. May be one of
+"commit", "propchange", "lock" and "unlock". Currently only commit
+notifications are implemented.
+.TP
+\-r \fIrepository\fP
+Path to the repository on the server.
+.TP
+\-v \fIrevision\fP
+Revision number of change. Applies to commits and property changes only.
+.TP
+\-a \fIauthor\fP
+The username of the person making the change. Applies to property
+changes and locks/unlocks only.
+.TP
+\-p \fIproperty\fP
+The name of the modified property. Applies to property changes only.
+.TP
+\-A \fIaction\fP
+The action that has been taken on a property. May be one of "A"
+(added), "M" (modified) or "D" (deleted). Applies to property changes
+only.
+.TP
+\-n
+Prevents any notification from being sent. The notification is printed
+to standard output instead, in a form suitable for input to \fBep\fP.
+.TP
+\--help
+Print usage summary and exit.
+.TP
+\--version
+Print version and exit.
+.\"
+.SH "DESCRIPTION"
+.LP
+\fBsvn2ticker\fP sends Tickertape notifications of changes in a
+Subversion repository. It is designed for use in post-commit,
+post-revpropchange, post-lock and post-unlock hook scripts.
+.\"
+.SH "SEE ALSO"
+.LP
+.BR svn (1),
+.BR cvs2ticker (1),
+.BR elvin (7),
+.BR ep (1),
+.LP
+http://www.tickertape.org/
+.\"
+.SH "HISTORY"
+.LP
+Implemented as an equivalent of the \fBcvs2ticker\fP script.
+.\"
+.\" ***************************************************************
