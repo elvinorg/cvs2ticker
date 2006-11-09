@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.4 2006/11/09 18:03:36 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.5 2006/11/09 18:47:14 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.4 $"[11:-2]
+__version__ = "$Revision: 1.5 $"[11:-2]
 
 
 ########################################################################
@@ -62,6 +62,7 @@ import os.path
 import random
 import sha
 import socket
+import string
 import sys
 import time
 import urllib
@@ -103,6 +104,8 @@ ATTR_ADDED_FILES        = "Added-Files"
 ATTR_MODIFIED_FILES     = "Modified-Files"
 ATTR_REMOVED_FILES      = "Removed-Files"
 ATTR_MOVED_FILES        = "Moved-Files"
+ATTR_LOCKED_FILES       = "Locked-Files"
+ATTR_UNLOCKED_FILES     = "Unlocked-Files"
 ATTR_FROM_V1            = "USER"
 ATTR_FROM_V3            = "From"
 ATTR_MESSAGE_V1         = "TICKERTEXT"
@@ -374,9 +377,76 @@ def revpropchange_nfn(repository, revision, author, property, action, config):
     return nfn
 
 def lock_nfn(repository, author, locking, config):
-    """ Construct a notification describing the lock/unlock event."""
-    raise NotImplementedError("lock/unlock notifications")
-    
+    """ Construct a notification describing the lock/unlock event. """
+
+    nfn = elvin.message()
+    hostname = socket.gethostname()
+
+    # Read the affected paths from standard input.
+    paths = map(string.strip, sys.stdin.readlines())
+    paths.sort()
+
+    assert len(paths) > 0
+    common_path = os.path.dirname(paths[0])
+    common_dirs = common_path.split(os.sep)
+    for path in paths:
+        # Update the longest common path
+        dirs = os.path.dirname(path).split(os.sep)
+        new_common = []
+        while len(common_dirs) > 0 and len(dirs) > 0 \
+                  and common_dirs[0] == dirs[0]:
+            new_common.append(common_dirs[0])
+            common_dirs = common_dirs[1:]
+            dirs = dirs[1:]
+        common_dirs = new_common
+
+    # Create tickertape message
+    if common_path:
+        msg = "In %s:" % common_path
+    else:
+        msg = "In root:"
+
+    # Add a list of the affected files
+    common_path = os.path.join("", *common_dirs)
+    if common_path:
+        common_str = common_path + os.sep
+    else:
+        common_str = ""
+    drop_common = lambda path: path[len(common_str):]
+    if locking:
+        action = "Locked"
+        paths_attr = ATTR_LOCKED_FILES
+    else:
+        action = "Unlocked"
+        paths_attr = ATTR_UNLOCKED_FILES
+    msg += " " + action + " " + " ".join(map(drop_common, paths))
+
+    # Add extra Subversion-specific information about the event
+    nfn[ATTR_REPOSITORY_PATH] = repository
+    nfn[ATTR_REPOSITORY_HOST] = hostname
+    if config.has_key(CONFIG_REPOSITORY_NAME):
+        nfn[ATTR_REPOSITORY_NAME] = config[CONFIG_REPOSITORY_NAME]
+    nfn[paths_attr] = " ".join(paths)
+
+    # Determine a Message-Id specific to this set of paths
+    hasher = sha.new("lock")
+    hasher.update(hostname)
+    hasher.update(repository)
+    for path in paths:
+        hasher.update(path)
+    paths_id = hasher.hexdigest()
+
+    # Generate new random Message-Id
+    hasher.update(str(time.time()))
+    hasher.update(str(random.getrandbits(32)))
+    message_id = hasher.hexdigest()
+
+    # Add tickertape-specific attributes
+    nfn.update(ticker_nfn(user=author, message=msg,
+                          message_id=message_id, replacement_id=paths_id))
+
+    return nfn
+
 
 ########################################################################
 
@@ -415,8 +485,6 @@ def parse_options():
     # Check results for validity
     if len(args) != 0:
         parser.error("excess arguments: " + " ".join(args))
-    if options.revision == None:
-        parser.error("missing required revision number")
     if options.repository == None:
         parser.error("missing required repository")
     if options.config_file == None:
@@ -481,7 +549,7 @@ if __name__ == "__main__":
     elif options.command == COMMAND_LOCK:
         nfn = lock_nfn(repository, options.author, True, config)
     elif options.command == COMMAND_UNLOCK:
-        nfn = unlock_nfn(repository, options.author, False, config)
+        nfn = lock_nfn(repository, options.author, False, config)
 
     # Connect to Elvin
     c = elvin.client()
