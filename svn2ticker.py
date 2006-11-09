@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.5 2006/11/09 18:47:14 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.6 2006/11/09 22:01:03 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.5 $"[11:-2]
+__version__ = "$Revision: 1.6 $"[11:-2]
 
 
 ########################################################################
@@ -266,7 +266,7 @@ def commit_nfn(repository, revision, config):
 
     # The bill trap
     if config.get(CONFIG_NAG) and not log_message.strip():
-        msg += "%s, the slack bastard, didn't supply a log message." % author
+        msg += ": %s, the slack bastard, didn't supply a log message." % author
     else:
         msg += ": " + log_message.strip().replace(os.linesep, " ")
 
