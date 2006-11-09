@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.1 2006/11/03 05:11:08 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.2 2006/11/09 16:27:41 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.1 $"[11:-2]
+__version__ = "$Revision: 1.2 $"[11:-2]
 
 
 ########################################################################
@@ -89,7 +89,7 @@ CONFIG_NAG              = "nag"
 CONFIG_GROUP            = "group"
 CONFIG_TIMEOUT          = "timeout"
 CONFIG_REPLY_TO         = "reply_to"
-CONFIG_SVN2WEB_URL      = "svn2web_url"
+CONFIG_VIEWVC_URL       = "viewvc_url"
 CONFIG_REPOSITORY_NAME  = "repository"
 
 ATTR_LOG_MESSAGE        = "Log-Message"
@@ -263,9 +263,9 @@ def commit_nfn(repository, revision, config):
         nfn[ATTR_TIMEOUT_V3] = int(config[CONFIG_TIMEOUT])
 
     # Create attachment URL
-    if config.has_key(CONFIG_SVN2WEB_URL):
-        str_url = config[CONFIG_SVN2WEB_URL]
-        str_url = str_url + "?rep=%s&rev=%d" % (urllib.quote(repository), revision)
+    if config.has_key(CONFIG_VIEWVC_URL):
+        str_url = config[CONFIG_VIEWVC_URL]
+        str_url = str_url + "?view=rev&revision=%d" % revision
         nfn.update({ATTR_MIME_TYPE: "x-elvin/url",
                     ATTR_MIME_ARGS: str_url,
                     ATTR_ATTACHMENT: "MIME-Version: 1.0\r\n" \
