@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.3 2006/11/09 17:48:19 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.4 2006/11/09 18:03:36 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.3 $"[11:-2]
+__version__ = "$Revision: 1.4 $"[11:-2]
 
 
 ########################################################################
@@ -120,6 +120,41 @@ ATTR_MIME_ARGS          = "MIME_ARGS"
 ATTR_ATTACHMENT         = "Attachment"
 
 ########################################################################
+
+def ticker_nfn(user, message, message_id,
+               replacement_id=None, in_reply_to=None, url=None):
+    """ Construct a Tickertape notification. """
+    nfn = elvin.message()
+
+    # Basic v1 attributes
+    nfn.update({ATTR_MESSAGE_V1: message,
+                ATTR_GROUP_V1: config.get(CONFIG_GROUP, "svn"),
+                ATTR_FROM_V1: user,
+                ATTR_MESSAGE_ID: message_id})
+
+    # Add v3 tickertape attributes
+    nfn.update({ATTR_MESSAGE_V3: nfn[ATTR_MESSAGE_V1],
+                ATTR_GROUP_V3: nfn[ATTR_GROUP_V1],
+                ATTR_FROM_V3: nfn[ATTR_FROM_V1]})
+
+    # Optional attributes
+    if config.has_key(CONFIG_REPLY_TO):
+        nfn[ATTR_REPLY_TO] = config[CONFIG_REPLY_TO]
+    if config.has_key(CONFIG_TIMEOUT):
+        nfn[ATTR_TIMEOUT_V1] = int(config[CONFIG_TIMEOUT]) / 60
+        nfn[ATTR_TIMEOUT_V3] = int(config[CONFIG_TIMEOUT])
+    if replacement_id:
+        nfn[ATTR_REPLACEMENT_ID] = replacement_id
+    if in_reply_to:
+        nfn[ATTR_IN_REPLY_TO] = in_reply_to
+    if url:
+        nfn.update({ATTR_MIME_TYPE: "x-elvin/url",
+                    ATTR_MIME_ARGS: url,
+                    ATTR_ATTACHMENT: "MIME-Version: 1.0\r\n" \
+                        "Content-Type: text/uri-list\r\n" \
+                        "\r\n" \
+                        "%s\r\n" % url})
+    return nfn
 
 def commit_nfn(repository, revision, config):
     """ Construct a notification describing the Subversion commit."""
@@ -232,6 +267,7 @@ def commit_nfn(repository, revision, config):
     else:
         msg += ": " + log_message.strip().replace(os.linesep, " ")
 
+    # Add extra Subversion-specific information about the event
     nfn[ATTR_LOG_MESSAGE] = log_message
     nfn[ATTR_REPOSITORY_PATH] = repository
     nfn[ATTR_REPOSITORY_HOST] = hostname
@@ -249,32 +285,12 @@ def commit_nfn(repository, revision, config):
     commit_id = hasher.hexdigest()
 
     # Add tickertape-specific attributes
-    nfn.update({ATTR_MESSAGE_V1: msg,
-                ATTR_GROUP_V1: config.get(CONFIG_GROUP, "svn"),
-                ATTR_FROM_V1: author,
-                ATTR_MESSAGE_ID: commit_id,
-                ATTR_REPLACEMENT_ID: commit_id})
-
-    # Add v3 tickertape attributes
-    nfn.update({ATTR_MESSAGE_V3: nfn[ATTR_MESSAGE_V1],
-                ATTR_GROUP_V3: nfn[ATTR_GROUP_V1],
-                ATTR_FROM_V3: nfn[ATTR_FROM_V1]})
-    if config.has_key(CONFIG_REPLY_TO):
-        nfn[ATTR_REPLY_TO] = config[CONFIG_REPLY_TO]
-    if config.has_key(CONFIG_TIMEOUT):
-        nfn[ATTR_TIMEOUT_V1] = int(config[CONFIG_TIMEOUT]) / 60
-        nfn[ATTR_TIMEOUT_V3] = int(config[CONFIG_TIMEOUT])
-
-    # Create attachment URL
     if config.has_key(CONFIG_VIEWVC_URL):
-        str_url = config[CONFIG_VIEWVC_URL]
-        str_url = str_url + "?view=rev&revision=%d" % revision
-        nfn.update({ATTR_MIME_TYPE: "x-elvin/url",
-                    ATTR_MIME_ARGS: str_url,
-                    ATTR_ATTACHMENT: "MIME-Version: 1.0\r\n" \
-                        "Content-Type: text/uri-list\r\n" \
-                        "\r\n" \
-                        "%s\r\n" % str_url})
+        url = "%s?view=rev&revision=%d" % \
+              (config[CONFIG_VIEWVC_URL], revision)
+    nfn.update(ticker_nfn(user=author, message=msg,
+                          message_id=commit_id, replacement_id=commit_id,
+                          url=url))
 
     return nfn
 
@@ -310,6 +326,7 @@ def revpropchange_nfn(repository, revision, author, property, action, config):
     revision_date = svn.fs.revision_prop(fs, revision,
                                          svn.core.SVN_PROP_REVISION_DATE)
 
+    # Add Subversion-specific information about the event
     nfn[ATTR_REPOSITORY_PATH] = repository
     nfn[ATTR_REPOSITORY_HOST] = hostname
     nfn[ATTR_REVISION] = revision
@@ -344,34 +361,15 @@ def revpropchange_nfn(repository, revision, author, property, action, config):
     hasher.update(str(random.getrandbits(32)))
     message_id = hasher.hexdigest()
 
-    # Add tickertape-specific attributes
-    nfn.update({ATTR_MESSAGE_V1: msg,
-                ATTR_GROUP_V1: config.get(CONFIG_GROUP, "svn"),
-                ATTR_FROM_V1: author,
-                ATTR_MESSAGE_ID: message_id,
-                ATTR_REPLACEMENT_ID: change_id,
-                ATTR_IN_REPLY_TO: commit_id})
-
-    # Add v3 tickertape attributes
-    nfn.update({ATTR_MESSAGE_V3: nfn[ATTR_MESSAGE_V1],
-                ATTR_GROUP_V3: nfn[ATTR_GROUP_V1],
-                ATTR_FROM_V3: nfn[ATTR_FROM_V1]})
-    if config.has_key(CONFIG_REPLY_TO):
-        nfn[ATTR_REPLY_TO] = config[CONFIG_REPLY_TO]
-    if config.has_key(CONFIG_TIMEOUT):
-        nfn[ATTR_TIMEOUT_V1] = int(config[CONFIG_TIMEOUT]) / 60
-        nfn[ATTR_TIMEOUT_V3] = int(config[CONFIG_TIMEOUT])
-
     # Create attachment URL
     if config.has_key(CONFIG_VIEWVC_URL):
-        str_url = config[CONFIG_VIEWVC_URL]
-        str_url = str_url + "?view=rev&revision=%d" % revision
-        nfn.update({ATTR_MIME_TYPE: "x-elvin/url",
-                    ATTR_MIME_ARGS: str_url,
-                    ATTR_ATTACHMENT: "MIME-Version: 1.0\r\n" \
-                        "Content-Type: text/uri-list\r\n" \
-                        "\r\n" \
-                        "%s\r\n" % str_url})
+        url = "%s?view=rev&revision=%d" % \
+              (config[CONFIG_VIEWVC_URL], revision)
+
+    # Add tickertape-specific attributes
+    nfn.update(ticker_nfn(user=author, message=msg,
+                          message_id=message_id, replacement_id=change_id,
+                          in_reply_to=commit_id, url=url))
 
     return nfn
 
