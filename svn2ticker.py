@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.2 2006/11/09 16:27:41 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.3 2006/11/09 17:48:19 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.2 $"[11:-2]
+__version__ = "$Revision: 1.3 $"[11:-2]
 
 
 ########################################################################
@@ -59,9 +59,11 @@ import ConfigParser
 import optparse
 import os
 import os.path
+import random
 import sha
 import socket
 import sys
+import time
 import urllib
 
 import svn.fs
@@ -76,13 +78,13 @@ VERSION = "1.0.0"
 ########################################################################
 
 COMMAND_COMMIT          = "commit"
-COMMAND_PROPCHANGE      = "propchange"
+COMMAND_REVPROPCHANGE      = "revpropchange"
 COMMAND_LOCK            = "lock"
 COMMAND_UNLOCK          = "unlock"
 
-PROPACTION_ADD          = "A"
-PROPACTION_MOD          = "M"
-PROPACTION_DEL          = "D"
+REVPROPACTION_ADD       = "A"
+REVPROPACTION_MOD       = "M"
+REVPROPACTION_DEL       = "D"
 
 CONFIG_ELVIN_URL        = "elvin_url"
 CONFIG_NAG              = "nag"
@@ -112,6 +114,7 @@ ATTR_GROUP_V3           = "Group"
 ATTR_MESSAGE_ID         = "Message-Id"
 ATTR_REPLACEMENT_ID     = "Replacement-Id"
 ATTR_REPLY_TO           = "Reply-To"
+ATTR_IN_REPLY_TO        = "In-Reply-To"
 ATTR_MIME_TYPE          = "MIME_TYPE"
 ATTR_MIME_ARGS          = "MIME_ARGS"
 ATTR_ATTACHMENT         = "Attachment"
@@ -119,7 +122,7 @@ ATTR_ATTACHMENT         = "Attachment"
 ########################################################################
 
 def commit_nfn(repository, revision, config):
-    """ Construct a dictionary describing the Subversion commit."""
+    """ Construct a notification describing the Subversion commit."""
 
     nfn = elvin.message()
     hostname = socket.gethostname()
@@ -275,9 +278,102 @@ def commit_nfn(repository, revision, config):
 
     return nfn
 
-def propchange_nfn(repository, revision, author, property, action, config):
-    """ Constrcut a notification describing the property change."""
-    raise NotImplementedError("property change notifications")
+def revpropchange_nfn(repository, revision, author, property, action, config):
+    """ Construct a notification describing the property change. """
+    # The old property value is available on standard input, but we
+    # just ignore it.
+
+    # We could possibly do some more sophisticated things:
+    # - If the commit was "recent" (perhaps based on the notification
+    #   timeout, if configured) we might re-emit a modified version of
+    #   the original commit notification, with a Replacement-Id to
+    #   replace it.
+    # - If the change is to a property with a "small" value
+    #   (e.g. author) the old and new values can be included in the
+    #   message.
+    # - If the change is to a property with a "large" value (e.g. log
+    #   message) we should find a way to make the old value available,
+    #   but putting it in the ticker text is unlikely to be a good
+    #   place.
+
+    nfn = elvin.message()
+    hostname = socket.gethostname()
+
+    # Get access to the repository
+    repos = svn.repos.open(repository)
+    fs = svn.repos.fs(repos)
+    root = svn.fs.revision_root(fs, revision)
+
+    # Look up some information about this revision
+    orig_author = svn.fs.revision_prop(fs, revision,
+                                       svn.core.SVN_PROP_REVISION_AUTHOR)
+    revision_date = svn.fs.revision_prop(fs, revision,
+                                         svn.core.SVN_PROP_REVISION_DATE)
+
+    nfn[ATTR_REPOSITORY_PATH] = repository
+    nfn[ATTR_REPOSITORY_HOST] = hostname
+    nfn[ATTR_REVISION] = revision
+    if config.has_key(CONFIG_REPOSITORY_NAME):
+        nfn[ATTR_REPOSITORY_NAME] = config[CONFIG_REPOSITORY_NAME]
+
+    # Create tickertape message
+    action_strings = {
+        REVPROPACTION_ADD: "Added property %s to revision %d",
+        REVPROPACTION_MOD: "Modified property %s in revision %d",
+        REVPROPACTION_DEL: "Deleted property %s from revision %d"
+        }
+    msg = action_strings[action] % (property, revision)
+    if author != orig_author:
+        msg += " by %s" % orig_author
+
+    # Determine Message-Id of the original commit.
+    hasher = sha.new()
+    hasher.update(hostname)
+    hasher.update(repository)
+    hasher.update(str(revision))
+    hasher.update(revision_date)
+    commit_id = hasher.hexdigest()
+
+    # Generate deterministic Replacement-Id so that subsequent changes
+    # to the same property will replace this notification.
+    hasher.update(property)
+    change_id = hasher.hexdigest()
+
+    # Generate new random Message-Id.
+    hasher.update(str(time.time()))
+    hasher.update(str(random.getrandbits(32)))
+    message_id = hasher.hexdigest()
+
+    # Add tickertape-specific attributes
+    nfn.update({ATTR_MESSAGE_V1: msg,
+                ATTR_GROUP_V1: config.get(CONFIG_GROUP, "svn"),
+                ATTR_FROM_V1: author,
+                ATTR_MESSAGE_ID: message_id,
+                ATTR_REPLACEMENT_ID: change_id,
+                ATTR_IN_REPLY_TO: commit_id})
+
+    # Add v3 tickertape attributes
+    nfn.update({ATTR_MESSAGE_V3: nfn[ATTR_MESSAGE_V1],
+                ATTR_GROUP_V3: nfn[ATTR_GROUP_V1],
+                ATTR_FROM_V3: nfn[ATTR_FROM_V1]})
+    if config.has_key(CONFIG_REPLY_TO):
+        nfn[ATTR_REPLY_TO] = config[CONFIG_REPLY_TO]
+    if config.has_key(CONFIG_TIMEOUT):
+        nfn[ATTR_TIMEOUT_V1] = int(config[CONFIG_TIMEOUT]) / 60
+        nfn[ATTR_TIMEOUT_V3] = int(config[CONFIG_TIMEOUT])
+
+    # Create attachment URL
+    if config.has_key(CONFIG_VIEWVC_URL):
+        str_url = config[CONFIG_VIEWVC_URL]
+        str_url = str_url + "?view=rev&revision=%d" % revision
+        nfn.update({ATTR_MIME_TYPE: "x-elvin/url",
+                    ATTR_MIME_ARGS: str_url,
+                    ATTR_ATTACHMENT: "MIME-Version: 1.0\r\n" \
+                        "Content-Type: text/uri-list\r\n" \
+                        "\r\n" \
+                        "%s\r\n" % str_url})
+
+    return nfn
 
 def lock_nfn(repository, author, locking, config):
     """ Construct a notification describing the lock/unlock event."""
@@ -295,10 +391,10 @@ def parse_options():
     parser.add_option("-A", "--property-action",
                       help="what happened to the property " +
                       "(for property changes)",
-                      choices=[PROPACTION_ADD, PROPACTION_MOD, PROPACTION_DEL])
+                      choices=[REVPROPACTION_ADD, REVPROPACTION_MOD, REVPROPACTION_DEL])
     parser.add_option("-c", "--command",
                       help="type of change that has occurred",
-                      choices=[COMMAND_COMMIT, COMMAND_PROPCHANGE,
+                      choices=[COMMAND_COMMIT, COMMAND_REVPROPCHANGE,
                                COMMAND_LOCK, COMMAND_UNLOCK],
                       default=COMMAND_COMMIT)
     parser.add_option("-f", "--config-file", metavar="PATH",
@@ -380,9 +476,10 @@ if __name__ == "__main__":
     # Construct notification from information in repository
     if options.command == COMMAND_COMMIT:
         nfn = commit_nfn(repository, options.revision, config)
-    elif options.command == COMMAND_PROPCHANGE:
-        nfn = propchange_nfn(repository, options.revision, options.author,
-                             options.property, options.property_action, config)
+    elif options.command == COMMAND_REVPROPCHANGE:
+        nfn = revpropchange_nfn(repository, options.revision, options.author,
+                                options.property, options.property_action,
+                                config)
     elif options.command == COMMAND_LOCK:
         nfn = lock_nfn(repository, options.author, True, config)
     elif options.command == COMMAND_UNLOCK:
