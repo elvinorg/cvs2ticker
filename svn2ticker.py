@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.6 2006/11/09 22:01:03 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.7 2006/11/16 14:15:34 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.6 $"[11:-2]
+__version__ = "$Revision: 1.7 $"[11:-2]
 
 
 ########################################################################
@@ -534,7 +534,9 @@ if __name__ == "__main__":
 
     # Parse options
     options = parse_options()
-    repository = svn.core.svn_path_canonicalize(options.repository)
+    repository = options.repository
+    if hasattr(svn.core, "svn_path_canonicalize"):
+        repository = svn.core.svn_path_canonicalize(repository)
 
     # Read config file
     config = read_config(options.config_file)
