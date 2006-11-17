@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.7 2006/11/16 14:15:34 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.8 2006/11/17 18:31:49 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.7 $"[11:-2]
+__version__ = "$Revision: 1.8 $"[11:-2]
 
 
 ########################################################################
@@ -291,6 +291,8 @@ def commit_nfn(repository, revision, config):
     if config.has_key(CONFIG_VIEWVC_URL):
         url = "%s?view=rev&revision=%d" % \
               (config[CONFIG_VIEWVC_URL], revision)
+    else:
+        url = None
     nfn.update(ticker_nfn(user=author, message=msg,
                           message_id=commit_id, replacement_id=commit_id,
                           url=url))
@@ -368,6 +370,8 @@ def revpropchange_nfn(repository, revision, author, property, action, config):
     if config.has_key(CONFIG_VIEWVC_URL):
         url = "%s?view=rev&revision=%d" % \
               (config[CONFIG_VIEWVC_URL], revision)
+    else:
+        url = None
 
     # Add tickertape-specific attributes
     nfn.update(ticker_nfn(user=author, message=msg,
