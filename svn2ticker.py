@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.8 2006/11/17 18:31:49 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.9 2006/11/17 18:33:10 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.8 $"[11:-2]
+__version__ = "$Revision: 1.9 $"[11:-2]
 
 
 ########################################################################
@@ -491,8 +491,6 @@ def parse_options():
         parser.error("excess arguments: " + " ".join(args))
     if options.repository == None:
         parser.error("missing required repository")
-    if options.config_file == None:
-        parser.error("missing required configuration file")
 
     return options
 
@@ -543,7 +541,8 @@ if __name__ == "__main__":
         repository = svn.core.svn_path_canonicalize(repository)
 
     # Read config file
-    config = read_config(options.config_file)
+    if options.config_file:
+        config = read_config(options.config_file)
 
     # Construct notification from information in repository
     if options.command == COMMAND_COMMIT:
