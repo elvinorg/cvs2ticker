@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.9 2006/11/17 18:33:10 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.10 2006/11/17 18:42:23 ilister Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.9 $"[11:-2]
+__version__ = "$Revision: 1.10 $"[11:-2]
 
 
 ########################################################################
@@ -194,6 +194,7 @@ def commit_nfn(repository, revision, config):
     assert len(changelist) > 0
     common_path = os.path.dirname(changelist[0][0])
     common_dirs = common_path.split(os.sep)
+    print "starting with %s (%s)" % (common_path, repr(common_dirs))
     for path, change in changelist:
         # Update the longest common path
         dirs = os.path.dirname(path).split(os.sep)
@@ -204,6 +205,7 @@ def commit_nfn(repository, revision, config):
             common_dirs = common_dirs[1:]
             dirs = dirs[1:]
         common_dirs = new_common
+        print "now %s" % repr(common_dirs)
 
         # Normalise the old path, which for moved files has a leading
         # slash for some reason
@@ -238,12 +240,12 @@ def commit_nfn(repository, revision, config):
             modified_files.append(path)
 
     # Create tickertape message
+    common_path = os.path.join("", *common_dirs)
     if common_path:
         msg = "In %s:" % common_path
     else:
         msg = "In root:"
 
-    common_path = os.path.join("", *common_dirs)
     if common_path:
         common_str = common_path + os.sep
     else:
@@ -405,13 +407,13 @@ def lock_nfn(repository, author, locking, config):
         common_dirs = new_common
 
     # Create tickertape message
+    common_path = os.path.join("", *common_dirs)
     if common_path:
         msg = "In %s:" % common_path
     else:
         msg = "In root:"
 
     # Add a list of the affected files
-    common_path = os.path.join("", *common_dirs)
     if common_path:
         common_str = common_path + os.sep
     else:
