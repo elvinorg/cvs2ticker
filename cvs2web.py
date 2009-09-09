@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.27 2006/11/02 01:17:13 ilister Exp $
+# Version:     $Id: cvs2web.py,v 1.28 2009/09/09 03:32:14 phelps Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
 # Copyright    (C) 2006 David Arnold
@@ -53,7 +53,7 @@ ViewVC.
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.27 $"[11:-2]
+__version__ = "$Revision: 1.28 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -90,7 +90,7 @@ RCSPATH = ""
 #############################################################################
 #############################################################################
 
-import base64, cgi, exceptions, os, pickle, popen2, regsub, string, sys, time, traceback, urllib
+import base64, cgi, exceptions, os, pickle, popen2, re, string, sys, time, traceback, urllib
 
 
 #############################################################################
@@ -102,7 +102,7 @@ def send(txt, indent=0):
     str_indent = " " * indent
 
     # Insert indent after carriage returns
-    txt = regsub.gsub("\n\(.\)", "\n%s\\1" % str_indent, txt)
+    txt = re.sub("\n\(.\)", "\n%s\\1" % str_indent, txt)
 
     # Write
     sys.stdout.write("%s%s" % (str_indent, txt))
@@ -218,7 +218,7 @@ def log_msg(d_cvs):
     if BUGZILLA_URL:
         bugzilla_url = BUGZILLA_URL % ('\\2')
         replacement = '<a href="%s">\\1</a>' % (bugzilla_url)
-        send(regsub.gsub('\([Bb]ug #?\([0-9]+\)\)', replacement, wrap(d_cvs["Log-Message"])))  
+        send(re.sub('\([Bb]ug #?\([0-9]+\)\)', replacement, wrap(d_cvs["Log-Message"])))  
         
     else:
 	send(wrap(d_cvs["Log-Message"]))
