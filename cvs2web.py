@@ -6,7 +6,7 @@
 #              cvs loginfo producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/cvs2web.py,v $
-# Version:     $Id: cvs2web.py,v 1.28 2009/09/09 03:32:14 phelps Exp $
+# Version:     $Id: cvs2web.py,v 1.29 2009/09/22 01:17:56 phelps Exp $
 #
 # Copyright    (C) 1999-2006 Mantara Software
 # Copyright    (C) 2006 David Arnold
@@ -53,7 +53,7 @@ ViewVC.
 
 """
 __author__  = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.28 $"[11:-2]
+__version__ = "$Revision: 1.29 $"[11:-2]
 
 #############################################################################
 #############################################################################
@@ -252,11 +252,11 @@ def add_info(d_cvs):
         cooked_url = "%s?file+%s" % (CVS2WEB_URL, urllib.quote(full_path))
         send('[<a href="%s">file</a>]\n' % cooked_url, 10)
         if VIEWVC_URL:
-            cooked_url = "%s/%s/%s?%s" % \
+            cooked_url = "%s/%s/%s/%s" % \
                          (VIEWVC_URL,
+                          urllib.quote(str_rep_name),
                           urllib.quote(rep_rel_path),
-                          urllib.quote(file),
-                          urllib.quote("cvsroot="+str_rep_name))
+                          urllib.quote(file))
             send('[<a href="%s">cvsweb</a>]\n' % cooked_url, 10)
         
     send("</dl>", 4)
@@ -294,11 +294,11 @@ def modify_info(d_cvs):
         cooked_url = "%s?log+%s" % (CVS2WEB_URL, urllib.quote(full_path))
         send('[<a href="%s">log</a>]\n' % cooked_url, 10)
         if VIEWVC_URL:
-            cooked_url = "%s/%s/%s?%s" % \
+            cooked_url = "%s/%s/%s/%s" % \
                          (VIEWVC_URL,
+                          urllib.quote(str_rep_name),
                           urllib.quote(rep_rel_path),
-                          urllib.quote(file),
-                          urllib.quote("cvsroot="+str_rep_name))
+                          urllib.quote(file))
             send('[<a href="%s">cvsweb</a>]\n' % cooked_url, 10)
         
     send("</dl>\n", 4)
@@ -329,10 +329,10 @@ def import_info(d_cvs):
         cooked_url = "%s?log+%s" % (CVS2WEB_URL, urllib.quote(full_path))
         send('[<a href="%s?log+%s">log</a>]\n' % cooked_url, 10)
         if VIEWVC_URL:
-            cooked_url = "%s/%s?%s" % \
+            cooked_url = "%s/%s/%s" % \
                          (VIEWVC_URL,
-                          urllib.quote(file),
-                          urllib.quote("cvsroot="+str_rep_name))
+                          urllib.quote(str_rep_name),
+                          urllib.quote(file))
             send('[<a href="%s">cvsweb</a>]\n' % cooked_url, 10)
 
     send("</dl>\n", 4)
