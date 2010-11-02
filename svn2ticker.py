@@ -6,7 +6,7 @@
 #              Subversion post-commit producer
 #
 # File:        $Source: /home/d/work/personal/ticker-cvs/cvs2ticker/svn2ticker.py,v $
-# Version:     $Id: svn2ticker.py,v 1.10 2006/11/17 18:42:23 ilister Exp $
+# Version:     $Id: svn2ticker.py,v 1.11 2010/11/02 16:50:24 phelps Exp $
 #
 # Copyright    (C) 2006 Ian Lister
 #
@@ -50,7 +50,7 @@ Subversion repository.
 
 """
 __author__ = "ticker-user@tickertape.org"
-__version__ = "$Revision: 1.10 $"[11:-2]
+__version__ = "$Revision: 1.11 $"[11:-2]
 
 
 ########################################################################
@@ -241,10 +241,12 @@ def commit_nfn(repository, revision, config):
 
     # Create tickertape message
     common_path = os.path.join("", *common_dirs)
+    msg = "In "
     if common_path:
-        msg = "In %s:" % common_path
+        msg += common_path
     else:
-        msg = "In root:"
+        msg += "root"
+    msg += " (r%d):" % revision
 
     if common_path:
         common_str = common_path + os.sep
